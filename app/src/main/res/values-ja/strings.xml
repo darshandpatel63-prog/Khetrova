@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Daily Utility Lab</string>
+    <string name="app_name">Khetrova</string>
     <string name="app_subtitle">インド地域土地単位換算・2D CAD不整形地測量・建築資材BOQ計算機</string>
     <string name="zero_permission_badge">100% オフライン • 権限不要 • クラウド送信ゼロ</string>
     <string name="nav_land_converter">土地単位</string>
