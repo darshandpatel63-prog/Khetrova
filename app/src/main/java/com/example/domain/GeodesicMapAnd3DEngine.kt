@@ -82,7 +82,7 @@ object GeodesicMapAnd3DEngine {
     }
 
     /**
-     * Builds a 4-corner parcel around a center Lat/Lng with given width & height in meters.
+     * Calculates great-circle distance between two coordinates using the haversine formula.
      */
     fun haversineDistanceMeters(p1: GpsLatLng, p2: GpsLatLng): Double {
         val lat1 = p1.lat * PI / 180.0
