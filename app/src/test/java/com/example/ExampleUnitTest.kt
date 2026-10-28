@@ -5,6 +5,7 @@ import com.example.domain.ConstructionModuleType
 import com.example.domain.FarmerAndLandToolsEngine
 import com.example.domain.FarmerCropSpec
 import com.example.domain.GeodesicMapAnd3DEngine
+import com.example.domain.GpsLatLng
 import com.example.domain.LandAndConstructionEngine
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -51,11 +52,12 @@ class ExampleUnitTest {
 
     @Test
     fun geodesicMapAnd3DEngine_calculatesPolygonCutoutSidesAndArea() {
-        val points = GeodesicMapAnd3DEngine.createParcelAroundCenter(
-            centerLat = 22.2916,
-            centerLng = 70.7932,
-            widthMeters = 60.0,
-            heightMeters = 40.0
+        // Test-only coordinates; the app itself no longer preloads demo plot coordinates.
+        val points = listOf(
+            GpsLatLng(22.29180, 70.79290, "P1"),
+            GpsLatLng(22.29180, 70.79350, "P2"),
+            GpsLatLng(22.29140, 70.79350, "P3"),
+            GpsLatLng(22.29140, 70.79290, "P4")
         )
         val profile = LandAndConstructionEngine.stateProfiles.first()
         val survey = GeodesicMapAnd3DEngine.evaluateGeodesicPolygon(points, profile)
