@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Daily Utility Lab"
+rootProject.name = "Khetrova"
 
 include(":app")
