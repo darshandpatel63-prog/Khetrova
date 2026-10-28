@@ -14,13 +14,13 @@ object PolyglotAndLegalData {
             id = "privacy_policy",
             title = "1. Privacy Policy (Zero-Data Collection)",
             subtitle = "100% Offline Vault • Zero Dangerous Permissions • AdMob Compliant",
-            content = "Daily Utility Lab operates on a strict Privacy-By-Design architecture. We do not collect, transmit, store, or share any personal identity documents, contacts, camera feeds, microphone audio, or banking data on any external server. All saved land surveys, 7/12 conversions, and construction BOQ records remain exclusively inside your device's local SQLite (Room) sandbox."
+            content = "Khetrova operates on a strict Privacy-By-Design architecture. We do not collect, transmit, store, or share any personal identity documents, contacts, camera feeds, microphone audio, or banking data on any external server. All saved land surveys, 7/12 conversions, and construction BOQ records remain exclusively inside your device's local SQLite (Room) sandbox."
         ),
         LegalDocumentItem(
             id = "terms_of_service",
             title = "2. Terms of Service",
             subtitle = "Usage conditions for engineering & land measurement calculations",
-            content = "By using Daily Utility Lab, you acknowledge that this software provides mathematical, geometric, agricultural, and engineering estimations based on Indian Standard (IS 456, IS 1443, IS 2212, IS 1661) formulas and regional/global revenue conversion tables. Users retain 100% ownership of all generated PDF reports and saved calculations."
+            content = "By using Khetrova, you acknowledge that this software provides mathematical, geometric, agricultural, and engineering estimations based on Indian Standard (IS 456, IS 1443, IS 2212, IS 1661) formulas and regional/global revenue conversion tables. Users retain 100% ownership of all generated PDF reports and saved calculations."
         ),
         LegalDocumentItem(
             id = "disclaimer",
@@ -36,15 +36,15 @@ object PolyglotAndLegalData {
         ),
         LegalDocumentItem(
             id = "about_page",
-            title = "5. About Daily Utility Lab",
+            title = "5. About Khetrova",
             subtitle = "Built for farmers (ખેડૂત), homeowners, civil engineers, masons & realtors",
-            content = "Daily Utility Lab solves everyday field challenges in a single free toolkit: (1) Accurate Indian & Global country land unit conversion, (2) In-App Satellite Map & Stock-Chart line drawing with 3D parcel view, (3) 7/12 Hectare-Are-Sq.M revenue decoder, (4) Land partition among heirs, fencing & crop calculators, (5) 4-sided irregular plot CAD triangulation, and (6) Construction material Bill of Quantities (BOQ)."
+            content = "Khetrova solves everyday field challenges in a single free toolkit: (1) Accurate Indian & Global country land unit conversion, (2) In-App Satellite Map & Stock-Chart line drawing with 3D parcel view, (3) 7/12 Hectare-Are-Sq.M revenue decoder, (4) Land partition among heirs, fencing & crop calculators, (5) 4-sided irregular plot CAD triangulation, and (6) Construction material Bill of Quantities (BOQ)."
         ),
         LegalDocumentItem(
             id = "contact_page",
             title = "6. Contact & Support Information",
             subtitle = "Technical support, bug reporting & regional unit feedback",
-            content = "For technical questions, regional measurement standard additions, or feedback:\n• Maintainer: Daily Utility Lab Engineering Team\n• Support Channel: In-App Feedback & Issue Tracker\n• Response SLA: Within 48 business hours."
+            content = "For technical questions, regional measurement standard additions, or feedback:\n• Maintainer: Khetrova Engineering Team\n• Support Channel: In-App Feedback & Issue Tracker\n• Response SLA: Within 48 business hours."
         ),
         LegalDocumentItem(
             id = "security_policy",
@@ -74,7 +74,7 @@ object PolyglotAndLegalData {
             id = "copyright_notice",
             title = "11. Copyright & Intellectual Property Notice",
             subtitle = "Open mathematical algorithms & original UI/CAD implementation",
-            content = "© 2026 Daily Utility Lab. All rights reserved. Mathematical formulas (Heron's formula, Bretschneider's formula, IS code mortar equations) are public domain scientific knowledge; the software architecture and CAD blueprint renderer are protected works."
+            content = "© 2026 Khetrova. All rights reserved. Mathematical formulas (Heron's formula, Bretschneider's formula, IS code mortar equations) are public domain scientific knowledge; the software architecture and CAD blueprint renderer are protected works."
         ),
         LegalDocumentItem(
             id = "community_guidelines",
