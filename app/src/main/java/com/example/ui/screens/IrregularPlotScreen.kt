@@ -78,6 +78,7 @@ fun IrregularPlotScreen(
     val diagonalText by viewModel.diagonalSideText.collectAsStateWithLifecycle()
     val rateSqFtText by viewModel.plotRatePerSqFtText.collectAsStateWithLifecycle()
     val plotResult by viewModel.irregularPlotResult.collectAsStateWithLifecycle()
+    val hasAllMeasurements = listOf(northText, eastText, southText, westText).all { it.toDoubleOrNull()?.let { value -> value > 0.0 } == true }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -98,57 +99,64 @@ fun IrregularPlotScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = uiStrings.liveCadBlueprint,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = CadPolygonStroke
-                                )
-                                Text(
-                                    text = "${uiStrings.triangulatedArea}: ${LandAndConstructionEngine.formatDec(plotResult.exactAreaSqFt)} Sq.Ft  •  ${LandAndConstructionEngine.formatDec(plotResult.exactAreaSqFt / 9.0)} Vaar",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color.White
-                                )
-                            }
-                            Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = Color(0xFF1E3A31)
+                        if (hasAllMeasurements) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = "${uiStrings.perimeter}: ${LandAndConstructionEngine.formatDec(plotResult.perimeterFt, 1)} ft",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = CadVertexPoint,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                                )
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = uiStrings.liveCadBlueprint,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = CadPolygonStroke
+                                    )
+                                    Text(
+                                        text = "${uiStrings.triangulatedArea}: ${LandAndConstructionEngine.formatDec(plotResult.exactAreaSqFt)} Sq.Ft  •  ${LandAndConstructionEngine.formatDec(plotResult.exactAreaSqFt / 9.0)} Vaar",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color.White
+                                    )
+                                }
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = Color(0xFF1E3A31)
+                                ) {
+                                    Text(
+                                        text = "${uiStrings.perimeter}: ${LandAndConstructionEngine.formatDec(plotResult.perimeterFt, 1)} ft",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = CadVertexPoint,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                    )
+                                }
                             }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+                            IrregularPlotCadCanvas(
+                                plotResult = plotResult,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(235.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .testTag("irregular_plot_cad_canvas")
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = plotResult.validationMessage,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFFBAE6FD)
+                            )
+                        } else {
+                            Text(
+                                text = "No sample plot is preloaded. Enter the real North, South, East and West boundary lengths below to see area and perimeter.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFFD1FAE5)
+                            )
                         }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        IrregularPlotCadCanvas(
-                            plotResult = plotResult,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(235.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .testTag("irregular_plot_cad_canvas")
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = plotResult.validationMessage,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFBAE6FD)
-                        )
                     }
                 }
             }
 
+            if (hasAllMeasurements) {
             item {
                 val absError = abs(plotResult.contractorErrorSqFt)
                 Card(
@@ -187,6 +195,8 @@ fun IrregularPlotScreen(
                 }
             }
 
+            }
+
             // Native Ad after Box 2 (CAD Blueprint + Contractor Error Detector)
             item {
                 AdMobNativeAdCard(slotIndex = 1)
@@ -214,35 +224,11 @@ fun IrregularPlotScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .horizontalScroll(rememberScrollState()),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            listOf(
-                                Triple("Trapezoid Plot", listOf(50.0, 40.0, 56.0, 44.0), 68.0),
-                                Triple("Skewed Corner", listOf(62.0, 35.0, 48.0, 42.0), 66.0),
-                                Triple("Agricultural Field", listOf(180.0, 145.0, 210.0, 160.0), 245.0),
-                                Triple("Standard 30×40", listOf(30.0, 40.0, 30.0, 40.0), 50.0)
-                            ).forEachIndexed { idx, (label, sides, diag) ->
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    modifier = Modifier
-                                        .clickable {
-                                            viewModel.applyPlotPreset(sides[0], sides[1], sides[2], sides[3], diag)
-                                        }
-                                        .testTag("plot_preset_$idx")
-                                ) {
-                                    Text(
-                                        text = label,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
-                                    )
-                                }
-                            }
-                        }
+                        Text(
+                            text = "Use measurements from your actual plot. No demo plot presets are loaded.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
 
                         Spacer(modifier = Modifier.height(12.dp))
 
@@ -333,6 +319,7 @@ fun IrregularPlotScreen(
 
                         OutlinedButton(
                             onClick = { viewModel.autoCalibrateDiagonal() },
+                            enabled = hasAllMeasurements,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("btn_auto_calibrate_diagonal")
@@ -343,13 +330,18 @@ fun IrregularPlotScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "${uiStrings.autoCalibrateDiagonal} (${LandAndConstructionEngine.formatDec(plotResult.minValidDiagonal, 1)}–${LandAndConstructionEngine.formatDec(plotResult.maxValidDiagonal, 1)} ft)"
+                                if (hasAllMeasurements) {
+                                    "${uiStrings.autoCalibrateDiagonal} (${LandAndConstructionEngine.formatDec(plotResult.minValidDiagonal, 1)}–${LandAndConstructionEngine.formatDec(plotResult.maxValidDiagonal, 1)} ft)"
+                                } else {
+                                    "${uiStrings.autoCalibrateDiagonal} (enter four sides first)"
+                                }
                             )
                         }
                     }
                 }
             }
 
+            if (hasAllMeasurements) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -412,11 +404,14 @@ fun IrregularPlotScreen(
                 }
             }
 
+            }
+
             // Native Ad after Regional Conversions Box
             item {
                 AdMobNativeAdCard(slotIndex = 2)
             }
 
+            if (hasAllMeasurements) {
             item {
                 Row(
                     modifier = Modifier
@@ -448,6 +443,7 @@ fun IrregularPlotScreen(
                         Text(uiStrings.exportPdf)
                     }
                 }
+            }
             }
         }
     }
