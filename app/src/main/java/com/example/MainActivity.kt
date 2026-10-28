@@ -361,7 +361,7 @@ private fun FirstLaunchLanguageOnboardingScreen(
     var searchQuery by remember { mutableStateOf("") }
 
     val featuredCodes = remember {
-        listOf("en", "gu", "hi", "mr", "ta", "te", "kn", "ml", "bn", "pa", "ja", "ko", "ar", "es", "fr", "de")
+        listOf("en", "en-IN", "gu", "hi", "mr", "ta", "te", "kn", "ml", "bn", "pa", "ja", "ko", "ar", "es", "fr", "de")
     }
     val featuredLanguages = remember {
         featuredCodes.mapNotNull { code -> AppLocalizationEngine.allLanguages.find { it.code == code } }
