@@ -46,6 +46,7 @@ import com.google.mlkit.nl.translate.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -149,7 +150,7 @@ fun HowToUseKhetrovaScreen(
                 .build()
         )
         isTranslating = true
-        translationStatus = "Preparing the on-device language model for ${selectedLanguage.nativeName}…"
+        translationStatus = "Preparing the on-device model for ${selectedLanguage.nativeName}… The first download may use mobile data."
         try {
             awaitVoidTask(translator.downloadModelIfNeeded(DownloadConditions.Builder().build()))
             translationStatus = "Translating the manual on this device…"
@@ -164,6 +165,8 @@ fun HowToUseKhetrovaScreen(
                 )
             }
             translationStatus = "Manual translated on this device to ${selectedLanguage.nativeName}. Machine translation may be imperfect."
+        } catch (cancelled: CancellationException) {
+            throw cancelled
         } catch (_: Exception) {
             displayedParagraphs = khetrovaManualEnglish
             pageTitle = "How to Use Khetrova"
