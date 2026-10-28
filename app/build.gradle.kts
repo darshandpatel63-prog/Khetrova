@@ -94,6 +94,7 @@ dependencies {
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
   implementation("com.google.mlkit:translate:17.0.3")
+  implementation("com.google.android.gms:play-services-ads:25.5.0")
   // implementation(libs.logging.interceptor)
   // implementation(libs.moshi.kotlin)
   // implementation(libs.okhttp)
