@@ -209,11 +209,11 @@ private fun createNativeAdView(context: Context): NativeAdView {
 }
 
 private fun populateNativeAdView(adView: NativeAdView, ad: NativeAd) {
-    val headline = adView.findViewWithTag<TextView>("khetrova-ad-headline")
-    val advertiser = adView.findViewWithTag<TextView>("khetrova-ad-advertiser")
-    val body = adView.findViewWithTag<TextView>("khetrova-ad-body")
-    val callToAction = adView.findViewWithTag<Button>("khetrova-ad-cta")
-    val icon = adView.findViewWithTag<ImageView>("khetrova-ad-icon")
+    val headline = adView.findViewWithTag<TextView>("khetrova-ad-headline") ?: return
+    val advertiser = adView.findViewWithTag<TextView>("khetrova-ad-advertiser") ?: return
+    val body = adView.findViewWithTag<TextView>("khetrova-ad-body") ?: return
+    val callToAction = adView.findViewWithTag<Button>("khetrova-ad-cta") ?: return
+    val icon = adView.findViewWithTag<ImageView>("khetrova-ad-icon") ?: return
 
     headline.text = ad.headline ?: ""
     advertiser.text = ad.advertiser.orEmpty()
