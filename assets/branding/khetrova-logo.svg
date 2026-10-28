@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Khetrova</title>
+  <desc id="desc">Land, farm, and construction tools represented by a leafy K, sunrise, curved fields, and a survey pin.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#052B29"/>
+      <stop offset="1" stop-color="#0C5A43"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B7F276"/>
+      <stop offset="1" stop-color="#36BD68"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFE27A"/>
+      <stop offset="1" stop-color="#F3A926"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="84" fill="url(#bg)"/>
+  <g transform="translate(20 4)">
+    <path d="M82 56 Q82 43 96 43 L115 55 L115 244 Q115 260 100 264 L82 246 Z" fill="url(#leaf)"/>
+    <path d="M106 162 L224 48 Q238 36 252 49 L263 60 L163 158 L270 250 Q284 263 268 276 Q257 284 245 273 L138 183 L115 207 Z" fill="url(#gold)"/>
+    <path d="M88 103 C104 65 142 55 177 64 C158 94 128 120 88 137 Z" fill="#9BE86B"/>
+    <path d="M291 128 A39 39 0 0 1 369 128 Z" fill="url(#gold)"/>
+    <path d="M41 229 C118 184 218 180 377 229 C397 235 411 242 428 252 L428 273 C302 225 174 220 75 276 L41 262 Z" fill="#147F55"/>
+    <path d="M47 239 C151 192 257 199 410 251" fill="none" stroke="#77D46A" stroke-width="13" stroke-linecap="round"/>
+    <path d="M52 267 C159 224 260 231 405 278" fill="none" stroke="#B7F276" stroke-width="11" stroke-linecap="round"/>
+    <path d="M64 294 C170 253 264 260 383 300" fill="none" stroke="#3ABF70" stroke-width="11" stroke-linecap="round"/>
+    <path d="M334 204 C312 204 295 222 295 244 C295 271 334 306 334 306 C334 306 373 271 373 244 C373 222 356 204 334 204 Z" fill="#FFF7DA"/>
+    <circle cx="334" cy="243" r="11" fill="#073A31"/>
+  </g>
+  <text x="256" y="383" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="62" font-weight="800" letter-spacing="-2" fill="#F8F6E8">Khet<tspan fill="#91E36D">rova</tspan></text>
+  <text x="256" y="430" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="500" letter-spacing="2.3" fill="#E4F2E8">LAND. FARM. BUILD. SIMPLIFIED.</text>
+</svg>
