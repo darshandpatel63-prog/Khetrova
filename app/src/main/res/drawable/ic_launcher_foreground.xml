@@ -4,32 +4,32 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Outer irregular quadrilateral land plot polygon -->
+    <!-- Khetrova mark: a leafy K, sunrise, surveyed land and a location pin. -->
     <path
-        android:fillColor="#26F59E0B"
-        android:pathData="M30,34L76,28L82,74L26,78Z"
-        android:strokeWidth="3.5"
-        android:strokeColor="#F59E0B" />
-    <!-- Diagonal triangulation line (Heron's formula survey line) -->
+        android:fillColor="#91E36D"
+        android:pathData="M22,19 C22,15 26,13 30,16 L34,19 L34,77 C34,82 29,85 25,81 L22,77 Z" />
     <path
-        android:pathData="M30,34L82,74"
-        android:strokeWidth="2.2"
-        android:strokeColor="#FDE68A" />
-    <!-- Architectural compass / roof peak emblem in center -->
+        android:fillColor="#F7BD45"
+        android:pathData="M31,49 L60,20 C63,17 68,17 71,20 L73,22 L48,47 L75,70 C78,73 75,78 71,78 C69,78 68,77 66,76 L39,53 L33,59 Z" />
     <path
-        android:fillColor="#FFFBEB"
-        android:pathData="M54,24L72,66L64,66L54,42L44,66L36,66Z" />
-    <!-- Corner survey vertices -->
+        android:fillColor="#B7F276"
+        android:pathData="M24,34 C28,23 39,20 49,23 C43,34 35,40 24,44 Z" />
     <path
-        android:fillColor="#F59E0B"
-        android:pathData="M30,34m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+        android:fillColor="#F7BD45"
+        android:pathData="M64,36 A9,9 0,0 1,82 36 Z" />
     <path
-        android:fillColor="#F59E0B"
-        android:pathData="M76,28m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+        android:fillColor="#147F55"
+        android:pathData="M16,65 C31,54 52,53 74,60 C81,62 86,66 90,70 L90,77 C68,67 47,66 28,77 L16,75 Z" />
     <path
-        android:fillColor="#F59E0B"
-        android:pathData="M82,74m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+        android:fillColor="#5DC65C"
+        android:pathData="M17,68 C36,59 58,60 83,69 L79,74 C57,66 36,67 19,76 Z" />
     <path
-        android:fillColor="#F59E0B"
-        android:pathData="M26,78m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+        android:fillColor="#A7E56A"
+        android:pathData="M21,77 C40,69 60,70 81,78 L77,82 C59,75 42,76 25,84 Z" />
+    <path
+        android:fillColor="#FFF7DA"
+        android:pathData="M80,58 C73,58 68,63 68,70 C68,78 80,88 80,88 C80,88 92,78 92,70 C92,63 87,58 80,58 Z" />
+    <path
+        android:fillColor="#073A31"
+        android:pathData="M80,65 A4,4 0,1 0,80.1 65 Z" />
 </vector>
