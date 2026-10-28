@@ -741,7 +741,7 @@ private fun QuickLanguageRibbon(
     onOpenAllLanguages: () -> Unit
 ) {
     val quickCodes = remember {
-        listOf("en", "gu", "hi", "mr", "ta", "te", "kn", "ml", "bn", "pa", "ja", "ko", "zh-CN", "ar", "es", "fr", "de", "ru")
+        listOf("en", "en-IN", "gu", "hi", "mr", "ta", "te", "kn", "ml", "bn", "pa", "ja", "ko", "zh-CN", "ar", "es", "fr", "de", "ru")
     }
     val quickLanguages = remember {
         quickCodes.mapNotNull { code -> AppLocalizationEngine.allLanguages.find { it.code == code } }
