@@ -111,7 +111,15 @@ fun LiveApmcPriceBoardCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = AppLocalizationEngine.getMarketPricesTitle(selectedLanguage.code),
+                            text = when {
+                                selectedZone.isInternational && selectedLanguage.code == "gu" -> "વિદેશી કૃષિ બજાર ભાવ"
+                                selectedZone.isInternational && selectedLanguage.code == "hi" -> "वैश्विक कृषि बाज़ार भाव"
+                                selectedZone.isInternational -> "Global Agricultural Market Prices"
+                                selectedLanguage.code == "gu" -> "ભારતના APMC માર્કેટ ભાવ"
+                                selectedLanguage.code == "hi" -> "भारत की APMC मंडी के भाव"
+                                selectedLanguage.code == "en-IN" -> "APMC Market Prices (India)"
+                                else -> "Indian Agricultural Market Prices"
+                            },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
