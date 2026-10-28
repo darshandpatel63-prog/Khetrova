@@ -105,6 +105,7 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
     val selectedStateProfile by viewModel.selectedStateProfile.collectAsStateWithLifecycle()
     val mapPoints by viewModel.mapPolygonPoints.collectAsStateWithLifecycle()
     val mapSurveyResult by viewModel.mapPolygonSurveyResult.collectAsStateWithLifecycle()
+    val mapDisplayCenter by viewModel.mapDisplayCenter.collectAsStateWithLifecycle()
     val googleMapsQuery by viewModel.googleMapsInputText.collectAsStateWithLifecycle()
     val uiStrings by viewModel.uiStrings.collectAsStateWithLifecycle()
 
@@ -181,32 +182,7 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // Quick Global Location Presets
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .horizontalScroll(rememberScrollState()),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            GeodesicMapAnd3DEngine.globalLocationPresets.forEachIndexed { index, preset ->
-                                Surface(
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    modifier = Modifier
-                                        .clickable { viewModel.applyGlobalMapPreset(preset) }
-                                        .testTag("map_preset_chip_$index")
-                                ) {
-                                    Text(
-                                        text = preset.name.substringBefore("(").trim(),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(10.dp))
+                        // No preloaded demo locations; enter a real location below.
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -326,12 +302,21 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                             }
                         }
 
+                        if (mapPoints.isEmpty() && mapDisplayCenter == null) {
+                            Text(
+                                text = "No demo map or sample measurements are loaded. Enter a real latitude/longitude or Google Maps link above, tap Jump to Location, then add the actual boundary corners.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFFD1FAE5),
+                                modifier = Modifier.padding(vertical = 12.dp)
+                            )
+                        } else {
                         Spacer(modifier = Modifier.height(8.dp))
 
                         // Stock-Market Style Live Telemetry Ticker Strip
                         val primaryUnitItem = mapSurveyResult.countryConversions.firstOrNull()
                         val gunthaVal = mapSurveyResult.areaSqFeet / 1089.0
                         val vaarVal = mapSurveyResult.areaSqFeet / 9.0
+                        if (mapPoints.size >= 3) {
                         Surface(
                             shape = RoundedCornerShape(10.dp),
                             color = Color(0xFF071712),
@@ -359,13 +344,21 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                                 LiveTickerMetric("PERIMETER", "${LandAndConstructionEngine.formatDec(mapSurveyResult.perimeterFeet, 1)} ft", Color.White)
                             }
                         }
+                        } else {
+                            Text(
+                                text = "${mapPoints.size} actual boundary point(s) selected. Add at least 3 points to calculate area and perimeter.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFFD1FAE5),
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(10.dp))
 
                         if (useSatelliteWebView) {
                             InteractiveSatelliteLeafletMap(
                                 points = mapPoints,
-                                centroid = mapSurveyResult.centroid,
+                                centroid = if (mapPoints.isNotEmpty()) mapSurveyResult.centroid else mapDisplayCenter ?: mapSurveyResult.centroid,
                                 onMapTapAddPoint = { lat, lng ->
                                     viewModel.addMapPolygonPoint(lat, lng)
                                 },
@@ -382,7 +375,7 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                             InteractiveTradingLineMapCanvas(
                                 surveyResult = mapSurveyResult,
                                 onTapAddRelativePoint = { dLat, dLng ->
-                                    val c = mapSurveyResult.centroid
+                                    val c = if (mapPoints.isNotEmpty()) mapSurveyResult.centroid else mapDisplayCenter ?: mapSurveyResult.centroid
                                     viewModel.addMapPolygonPoint(c.lat + dLat, c.lng + dLng)
                                 },
                                 onDragVertexRelative = { vertexIdx, newLat, newLng ->
@@ -441,10 +434,12 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                                 Text("Send Lines to 2D CAD")
                             }
                         }
+                        } // End of the map/measurement area when a real location is selected.
                     }
                 }
             }
 
+            if (mapPoints.size >= 3) {
             item {
                 // Card 3: 3D Extruded Cutout Parcel Visualizer Card
                 Card(
@@ -769,6 +764,7 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                     }
                 }
             }
+            } // Show calculated CAD, boundary tables, conversions and export only after real points exist.
         }
     }
 }
