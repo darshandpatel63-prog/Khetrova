@@ -120,7 +120,7 @@ object PdfReportGenerator {
         canvas.drawRect(24f, 24f, 571f, 102f, headerPaint)
         canvas.drawRect(24f, 98f, 571f, 104f, accentPaint)
 
-        canvas.drawText("DAILY UTILITY LAB • LAND SURVEY & CONSTRUCTION BOQ", 40f, 54f, titleTextPaint)
+        canvas.drawText("KHETROVA • LAND SURVEY & CONSTRUCTION BOQ", 40f, 54f, titleTextPaint)
         val dateFormatted = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.US).format(Date(record.timestamp))
         canvas.drawText(
             "100% Offline Engineering Report  |  Standard: ${record.stateRegion}  |  Date: $dateFormatted",
