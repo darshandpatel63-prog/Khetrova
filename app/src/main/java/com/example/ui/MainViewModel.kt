@@ -204,7 +204,7 @@ class MainViewModel(
     private val _diagonalSideText = MutableStateFlow("")
     val diagonalSideText: StateFlow<String> = _diagonalSideText.asStateFlow()
 
-    private val _plotRatePerSqFtText = MutableStateFlow("3500")
+    private val _plotRatePerSqFtText = MutableStateFlow("")
     val plotRatePerSqFtText: StateFlow<String> = _plotRatePerSqFtText.asStateFlow()
 
     private val _irregularPlotResult = MutableStateFlow(computeCurrentIrregularPlot())
@@ -1028,7 +1028,7 @@ class MainViewModel(
         val s = _southSideText.value.toDoubleOrNull() ?: 0.0
         val w = _westSideText.value.toDoubleOrNull() ?: 0.0
         val d = _diagonalSideText.value.toDoubleOrNull() ?: 0.0
-        val rate = _plotRatePerSqFtText.value.toDoubleOrNull() ?: 1500.0
+        val rate = _plotRatePerSqFtText.value.toDoubleOrNull() ?: 0.0
         return LandAndConstructionEngine.evaluateIrregularPlot(
             northFt = n,
             eastFt = e,
