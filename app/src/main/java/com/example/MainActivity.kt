@@ -114,6 +114,7 @@ import com.example.ui.components.AdMobInterstitialDialog
 import com.example.ui.components.AdMobRewardedAdDialog
 import com.example.ui.screens.ConstructionEstimatorScreen
 import com.example.ui.screens.IrregularPlotScreen
+import com.example.ui.screens.HowToUseKhetrovaScreen
 import com.example.ui.screens.LandConverterScreen
 import com.example.ui.screens.MapAnd3DCutoutScreen
 import com.example.ui.screens.VaultAndSystemScreen
@@ -147,6 +148,7 @@ fun DailyUtilityLabApp(viewModel: MainViewModel) {
     val isFirstLaunchLanguageGateOpen by viewModel.isFirstLaunchLanguageGateOpen.collectAsStateWithLifecycle()
     val isLanguageDialogOpen by viewModel.isLanguageDialogOpen.collectAsStateWithLifecycle()
     val isAllFeaturesMenuOpen by viewModel.isAllFeaturesMenuOpen.collectAsStateWithLifecycle()
+    val isHowToUseManualOpen by viewModel.isHowToUseManualOpen.collectAsStateWithLifecycle()
     val statusMessage by viewModel.statusBannerMessage.collectAsStateWithLifecycle()
     val adFreeRemainingMinutes by viewModel.adFreeRemainingMinutes.collectAsStateWithLifecycle()
     val appLaunchCount by viewModel.appLaunchCount.collectAsStateWithLifecycle()
@@ -176,6 +178,14 @@ fun DailyUtilityLabApp(viewModel: MainViewModel) {
                 onConfirmLanguage = { chosenLanguage ->
                     viewModel.completeFirstLaunchLanguageSelection(chosenLanguage, context)
                 }
+            )
+            return@CompositionLocalProvider
+        }
+
+        if (isHowToUseManualOpen) {
+            HowToUseKhetrovaScreen(
+                selectedLanguage = selectedLanguage,
+                onBack = { viewModel.closeHowToUseManual() }
             )
             return@CompositionLocalProvider
         }
@@ -1083,6 +1093,15 @@ private fun AllFeaturesQuickMenuDialog(
                 badge = "115+ Langs",
                 icon = Icons.Default.Language,
                 accentColor = Color(0xFF4F46E5)
+            ),
+            QuickMenuFeatureItem(
+                destination = QuickFeatureDestination.HOW_TO_USE_APP_MANUAL,
+                category = "Help & Learning",
+                title = "How to Use Khetrova — Full Feature Manual",
+                subtitle = "Step-by-step guidance for land units, map survey, CAD, materials, market prices, farmer tools, Vault and PDFs",
+                badge = "User Manual",
+                icon = Icons.Default.Description,
+                accentColor = Color(0xFF0D9488)
             ),
             QuickMenuFeatureItem(
                 destination = QuickFeatureDestination.LEGAL_AND_PRIVACY,
