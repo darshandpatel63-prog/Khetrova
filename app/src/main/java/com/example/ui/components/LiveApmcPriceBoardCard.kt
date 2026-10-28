@@ -186,11 +186,11 @@ fun LiveApmcPriceBoardCard(
                         } else {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Refresh Live APMC Rates",
+                                contentDescription = "Refresh official daily market feed",
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Sync Live", fontWeight = FontWeight.Bold)
+                            Text("Refresh Feed", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
