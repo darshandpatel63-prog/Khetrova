@@ -1041,6 +1041,7 @@ class MainViewModel(
 
     fun buildIrregularPlotRecord(): SurveyRecordEntity {
         val res = _irregularPlotResult.value
+        val hasRate = _plotRatePerSqFtText.value.toDoubleOrNull()?.let { it > 0.0 } == true
         val vaar = res.exactAreaSqFt / 9.0
         val guntha = res.exactAreaSqFt / 1089.0
         val vigha = res.exactAreaSqFt / _selectedStateProfile.value.vighaSqFt
@@ -1051,7 +1052,17 @@ class MainViewModel(
             appendLine("Sub-Triangle 2 (S-W-Diag): ${LandAndConstructionEngine.formatDec(res.triangle2AreaSqFt)} Sq.Ft")
             appendLine("Exact Triangulated Area: ${LandAndConstructionEngine.formatDec(res.exactAreaSqFt)} Sq.Ft")
             appendLine("Naive Contractor Avg Area: ${LandAndConstructionEngine.formatDec(res.naiveAvgAreaSqFt)} Sq.Ft")
-            appendLine("Measurement Discrepancy: ${LandAndConstructionEngine.formatDec(res.contractorErrorSqFt)} Sq.Ft (${LandAndConstructionEngine.formatCurrency(res.contractorErrorInr)})")
+            appendLine(
+                "Measurement Discrepancy: ${LandAndConstructionEngine.formatDec(res.contractorErrorSqFt)} Sq.Ft (" +
+                    if (hasRate) LandAndConstructionEngine.formatCurrency(res.contractorErrorInr)
+                    else "Money difference not calculated; no rate was entered"
+                + ")"
+            )
+            appendLine(
+                "Estimated Land Value: " +
+                    if (hasRate) LandAndConstructionEngine.formatCurrency(res.estimatedPlotValueInr)
+                    else "Not calculated; no rate per square foot was entered"
+            )
             appendLine("Vaar (Gaj): ${LandAndConstructionEngine.formatDec(vaar)} | Guntha: ${LandAndConstructionEngine.formatDec(guntha, 4)} | Vigha: ${LandAndConstructionEngine.formatDec(vigha, 4)}")
         }
         return SurveyRecordEntity(
@@ -1061,7 +1072,7 @@ class MainViewModel(
             primaryAreaSqFt = res.exactAreaSqFt,
             summaryMetrics = "${LandAndConstructionEngine.formatDec(res.exactAreaSqFt)} Sq.Ft • ${LandAndConstructionEngine.formatDec(vaar)} Vaar • ${LandAndConstructionEngine.formatDec(guntha, 3)} Guntha",
             detailedBreakdown = details.trim(),
-            estimatedCostInr = res.estimatedPlotValueInr,
+            estimatedCostInr = if (hasRate) res.estimatedPlotValueInr else 0.0,
             plotSidesCsv = "${res.northFt},${res.eastFt},${res.southFt},${res.westFt},${res.usedDiagonal}"
         )
     }
