@@ -1045,6 +1045,16 @@ class MainViewModel(
         val vaar = res.exactAreaSqFt / 9.0
         val guntha = res.exactAreaSqFt / 1089.0
         val vigha = res.exactAreaSqFt / _selectedStateProfile.value.vighaSqFt
+        val moneyDifferenceText = if (hasRate) {
+            LandAndConstructionEngine.formatCurrency(res.contractorErrorInr)
+        } else {
+            "Money difference not calculated; no rate was entered"
+        }
+        val estimatedLandValueText = if (hasRate) {
+            LandAndConstructionEngine.formatCurrency(res.estimatedPlotValueInr)
+        } else {
+            "Not calculated; no rate per square foot was entered"
+        }
         val details = buildString {
             appendLine("Boundary Sides: North=${res.northFt} ft, East=${res.eastFt} ft, South=${res.southFt} ft, West=${res.westFt} ft")
             appendLine("Diagonal (NW to SE): ${LandAndConstructionEngine.formatDec(res.usedDiagonal)} ft")
@@ -1052,17 +1062,8 @@ class MainViewModel(
             appendLine("Sub-Triangle 2 (S-W-Diag): ${LandAndConstructionEngine.formatDec(res.triangle2AreaSqFt)} Sq.Ft")
             appendLine("Exact Triangulated Area: ${LandAndConstructionEngine.formatDec(res.exactAreaSqFt)} Sq.Ft")
             appendLine("Naive Contractor Avg Area: ${LandAndConstructionEngine.formatDec(res.naiveAvgAreaSqFt)} Sq.Ft")
-            appendLine(
-                "Measurement Discrepancy: ${LandAndConstructionEngine.formatDec(res.contractorErrorSqFt)} Sq.Ft (" +
-                    if (hasRate) LandAndConstructionEngine.formatCurrency(res.contractorErrorInr)
-                    else "Money difference not calculated; no rate was entered"
-                + ")"
-            )
-            appendLine(
-                "Estimated Land Value: " +
-                    if (hasRate) LandAndConstructionEngine.formatCurrency(res.estimatedPlotValueInr)
-                    else "Not calculated; no rate per square foot was entered"
-            )
+            appendLine("Measurement Discrepancy: ${LandAndConstructionEngine.formatDec(res.contractorErrorSqFt)} Sq.Ft (${moneyDifferenceText})")
+            appendLine("Estimated Land Value: $estimatedLandValueText")
             appendLine("Vaar (Gaj): ${LandAndConstructionEngine.formatDec(vaar)} | Guntha: ${LandAndConstructionEngine.formatDec(guntha, 4)} | Vigha: ${LandAndConstructionEngine.formatDec(vigha, 4)}")
         }
         return SurveyRecordEntity(
