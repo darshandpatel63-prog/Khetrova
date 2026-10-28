@@ -36,8 +36,6 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
     }
-    debug {
-    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
