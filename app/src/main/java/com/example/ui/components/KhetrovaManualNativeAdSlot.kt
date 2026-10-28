@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -194,9 +195,9 @@ private fun createNativeAdView(context: Context): NativeAdView {
         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
     ).apply { topMargin = dp(8) })
 
-    nativeAdView.addView(column, NativeAdView.LayoutParams(
-        NativeAdView.LayoutParams.MATCH_PARENT,
-        NativeAdView.LayoutParams.WRAP_CONTENT
+    nativeAdView.addView(column, FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
     ))
 
     nativeAdView.iconView = icon
