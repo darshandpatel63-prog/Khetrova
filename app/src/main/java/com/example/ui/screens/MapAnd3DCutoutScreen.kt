@@ -420,9 +420,9 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                                 onClick = { viewModel.resetDefaultFourCornerMapCut() },
                                 modifier = Modifier.testTag("btn_map_reset_4corner")
                             ) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Reset 4-Corner Cut", modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Refresh, contentDescription = "Clear Boundary Points", modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("4-Corner Box", color = Color.White)
+                                Text("Clear Boundary", color = Color.White)
                             }
 
                             Button(
