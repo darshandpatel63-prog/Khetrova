@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.ApmcRegionZone
+import com.example.domain.AppLocalizationEngine
 import com.example.domain.LandAndConstructionEngine
 import com.example.domain.LiveApmcMarketEngine
 import com.example.domain.LiveCropPriceQuote
@@ -63,6 +64,7 @@ fun LiveApmcPriceBoardCard(
     val showQuintalMode by viewModel.apmcShowQuintalMode.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncingLiveApmc.collectAsStateWithLifecycle()
     val snapshot by viewModel.liveApmcSyncSnapshot.collectAsStateWithLifecycle()
+    val selectedLanguage by viewModel.selectedLanguage.collectAsStateWithLifecycle()
 
     val yardsInSelectedZone = remember(selectedZone) {
         LiveApmcMarketEngine.getYardsByZone(selectedZone)
@@ -109,13 +111,13 @@ fun LiveApmcPriceBoardCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = "LIVE REGIONAL APMC & GLOBAL GOVT MANDI BHAV (રોજેરોજના લાઈવ માર્કેટ યાર્ડ ભાવ)",
+                            text = AppLocalizationEngine.getMarketPricesTitle(selectedLanguage.code),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "વિસ્તાર મુજબ અલગ-અલગ APMC યાર્ડ (સૌરાષ્ટ્ર, ઉત્તર/મધ્ય/દક્ષિણ ગુજરાત, ભારત e-NAM) + વિશ્વના દેશોના સરકારી બજાર ભાવ",
+                            text = "Official daily India Agmarknet records are shown when available. Other country-specific prices appear only after a verified source is connected.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -354,12 +356,29 @@ fun LiveApmcPriceBoardCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                yardQuotes.forEach { quote ->
-                    LiveCropQuoteRowCard(
-                        quote = quote,
-                        showQuintalMode = showQuintalMode,
-                        onApplyToMandiBill = { viewModel.applyLiveQuoteToMandiCalculator(quote) }
+                if (yardQuotes.isEmpty()) {
+                    val emptyMessage = when {
+                        selectedZone.isInternational ->
+                            "No verified live price feed is connected for this country/market yet. Sample prices are intentionally hidden."
+                        snapshot.quotes.isEmpty() ->
+                            "No official Agmarknet prices were received. Check internet and tap Sync Live. Sample prices are intentionally hidden."
+                        else ->
+                            "No official daily record matched this market. Try another market or sync again."
+                    }
+                    Text(
+                        text = emptyMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 12.dp)
                     )
+                } else {
+                    yardQuotes.forEach { quote ->
+                        LiveCropQuoteRowCard(
+                            quote = quote,
+                            showQuintalMode = showQuintalMode,
+                            onApplyToMandiBill = { viewModel.applyLiveQuoteToMandiCalculator(quote) }
+                        )
+                    }
                 }
             }
 
@@ -368,6 +387,7 @@ fun LiveApmcPriceBoardCard(
             // Save Yard Daily Sheet to Vault Button
             OutlinedButton(
                 onClick = { viewModel.saveLiveApmcYardSheetToVault() },
+                enabled = yardQuotes.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("btn_save_live_apmc_sheet")
@@ -419,31 +439,17 @@ private fun LiveCropQuoteRowCard(
                     )
                 }
 
-                // Daily Trend Chip
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isPositive) Color(0xFF065F46) else Color(0xFF92400E)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = if (isPositive) Icons.Default.TrendingUp else Icons.Default.TrendingDown,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = if (quote.hasVerifiedDailyChange) {
                         val sign = if (isPositive) "+" else ""
-                        Text(
-                            text = "${sign}₹${LandAndConstructionEngine.formatDec(changeDisplay, 0)}",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
-                }
+                        "${sign}₹${LandAndConstructionEngine.formatDec(changeDisplay, 0)}"
+                    } else {
+                        "Daily change: not provided by source"
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -518,8 +524,19 @@ private fun LiveCropQuoteRowCard(
                     } else {
                         ""
                     }
+                    val arrivalInfo = if (quote.hasVerifiedArrivalData) {
+                        "Arrival: ${quote.arrivalBagsCount} Bags"
+                    } else {
+                        "Arrival: not provided by this source"
+                    }
                     Text(
-                        text = "${intlInfo}આવક (Arrival): ${quote.arrivalBagsCount} Bags (ગુણી)",
+                        text = "${intlInfo}${arrivalInfo}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "Source: ${quote.governmentSourceLabel} • Market date: ${quote.updatedTimestampText} • " +
+                            if (quote.isLiveNetworkSynced) "Recent official record" else "Older official record",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -529,15 +546,20 @@ private fun LiveCropQuoteRowCard(
 
                 Button(
                     onClick = onApplyToMandiBill,
+                    enabled = quote.isLiveNetworkSynced,
                     modifier = Modifier.testTag("btn_use_apmc_rate_${quote.quoteId}")
                 ) {
                     Icon(
                         imageVector = Icons.Default.Calculate,
-                        contentDescription = "Use rate in Mandi Bill",
+                        contentDescription = "Use verified recent rate in Mandi Bill",
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Use in Bill", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        if (quote.isLiveNetworkSynced) "Use in Bill" else "Dated Data",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
