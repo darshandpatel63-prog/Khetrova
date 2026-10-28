@@ -1,0 +1,168 @@
+name: Import root ZIP into repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: khetrova-zip-import-main
+  cancel-in-progress: false
+
+jobs:
+  import-zip:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - name: Safely extract root ZIP files
+        shell: bash
+        run: |
+          python <<'PY'
+          import os
+          import shutil
+          import stat
+          import tempfile
+          import zipfile
+          from pathlib import Path, PurePosixPath
+
+          repo_name = os.environ["GITHUB_REPOSITORY"].split("/")[-1].lower()
+          root = Path.cwd().resolve()
+          archives = sorted(
+              p for p in root.iterdir()
+              if p.is_file() and p.suffix.lower() == ".zip"
+          )
+
+          if not archives:
+              print("No ZIP files found in the repository root; nothing to import.")
+              raise SystemExit(0)
+
+          print("ZIP files to process:", ", ".join(p.name for p in archives))
+
+          with tempfile.TemporaryDirectory(prefix="khetrova-zip-import-") as temp_dir:
+              payload = Path(temp_dir) / "payload"
+              payload.mkdir()
+              extracted_count = 0
+
+              for archive in archives:
+                  print(f"Reading {archive.name}")
+                  with zipfile.ZipFile(archive) as zf:
+                      files = []
+                      for info in zf.infolist():
+                          if info.is_dir():
+                              continue
+
+                          raw_name = info.filename.replace("\\", "/")
+                          path = PurePosixPath(raw_name)
+
+                          if raw_name.startswith("/") or not path.parts:
+                              raise SystemExit(f"Unsafe absolute/empty ZIP path in {archive.name}: {info.filename}")
+                          if ".." in path.parts or path.parts[0].endswith(":"):
+                              raise SystemExit(f"Unsafe ZIP path in {archive.name}: {info.filename}")
+                          if ".git" in path.parts:
+                              print(f"Skipping Git metadata: {info.filename}")
+                              continue
+                          if "__MACOSX" in path.parts or path.name == ".DS_Store":
+                              continue
+
+                          mode = (info.external_attr >> 16) & 0o170000
+                          if mode == stat.S_IFLNK:
+                              raise SystemExit(f"Symbolic links are not allowed in ZIPs: {info.filename}")
+                          if mode not in (0, stat.S_IFREG):
+                              raise SystemExit(f"Unsupported special file in ZIP: {info.filename}")
+
+                          files.append((info, path.parts))
+
+                      if not files:
+                          raise SystemExit(f"No usable files found in {archive.name}; ZIP was not removed.")
+
+                      top_levels = {parts[0] for _, parts in files}
+                      has_root_files = any(len(parts) == 1 for _, parts in files)
+                      wrapper = None
+
+                      if len(top_levels) == 1 and not has_root_files:
+                          only_top = next(iter(top_levels))
+                          normalized_top = only_top.lower()
+                          known_wrappers = {
+                              repo_name,
+                              f"{repo_name}-main",
+                              f"{repo_name}-master",
+                              f"{repo_name}-develop",
+                              f"{repo_name}-dev",
+                          }
+                          root_markers = {
+                              "metadata.json", ".gitignore", "settings.gradle",
+                              "settings.gradle.kts", "build.gradle", "build.gradle.kts",
+                              "package.json", "pubspec.yaml", "pyproject.toml",
+                              "Cargo.toml", "README.md", "gradlew", "pom.xml",
+                              "index.html",
+                          }
+                          contains_project_root = any(
+                              len(parts) == 2 and parts[0] == only_top and parts[1] in root_markers
+                              for _, parts in files
+                          )
+                          if normalized_top in known_wrappers or contains_project_root:
+                              wrapper = only_top
+                              print(f"Removing ZIP wrapper directory: {wrapper}/")
+
+                      for info, parts in files:
+                          relative_parts = parts[1:] if wrapper and parts[0] == wrapper else parts
+                          if not relative_parts:
+                              continue
+
+                          destination = payload.joinpath(*relative_parts)
+                          destination.parent.mkdir(parents=True, exist_ok=True)
+                          with zf.open(info, "r") as source, destination.open("wb") as target:
+                              shutil.copyfileobj(source, target)
+                          extracted_count += 1
+
+              if extracted_count == 0:
+                  raise SystemExit("ZIP files contained no extractable files; no changes were applied.")
+
+              # Copy the combined payload over the checkout. Existing files are replaced;
+              # new files and folders are added. Files absent from the ZIP are left alone.
+              copied_count = 0
+              for source_path in payload.rglob("*"):
+                  if source_path.is_dir():
+                      continue
+                  relative = source_path.relative_to(payload)
+                  destination = root / relative
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(source_path, destination)
+                  copied_count += 1
+
+              # Remove only the ZIP files that triggered this run, after extraction succeeds.
+              for archive in archives:
+                  if archive.exists():
+                      archive.unlink()
+
+              print(f"Imported {copied_count} file(s) and removed {len(archives)} root ZIP file(s).")
+          PY
+
+      - name: Commit and push extracted files to main
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No repository changes to commit."
+            exit 0
+          fi
+          git commit -m "Import files from uploaded ZIP"
+          git push origin HEAD:main
