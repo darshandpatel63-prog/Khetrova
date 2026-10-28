@@ -560,7 +560,6 @@ class MainViewModel(
         when (destination) {
             QuickFeatureDestination.HOW_TO_USE_APP_MANUAL -> {
                 _isHowToUseManualOpen.value = true
-                _statusBannerMessage.value = "Opened the How to Use Khetrova feature manual"
             }
             QuickFeatureDestination.KHET_TALAVDI_WATER_TANK -> {
                 _selectedTab.value = AppTab.VAULT_SYSTEM
