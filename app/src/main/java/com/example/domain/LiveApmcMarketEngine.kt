@@ -672,7 +672,6 @@ object LiveApmcMarketEngine {
         var brlToInr = 0.0
         var jpyToInr = 0.0
         var audToInr = 0.0
-        var aedToInr = 0.0
         var fxSynced = false
 
         try {
@@ -692,14 +691,12 @@ object LiveApmcMarketEngine {
                         val brl = rates.optDouble("BRL", 0.0)
                         val jpy = rates.optDouble("JPY", 0.0)
                         val aud = rates.optDouble("AUD", 0.0)
-                        val aed = rates.optDouble("AED", 0.0)
-                        if (inr > 50.0 && eur > 0.0 && brl > 0.0 && jpy > 0.0 && aud > 0.0 && aed > 0.0) {
+                        if (inr > 50.0 && eur > 0.0 && brl > 0.0 && jpy > 0.0 && aud > 0.0) {
                             usdToInr = inr
                             eurToInr = inr / eur
                             brlToInr = inr / brl
                             jpyToInr = inr / jpy
                             audToInr = inr / aud
-                            aedToInr = inr / aed
                             fxSynced = true
                         }
                     }
@@ -885,7 +882,7 @@ object LiveApmcMarketEngine {
             set(Calendar.MILLISECOND, 0)
         }.timeInMillis
         val daysOld = (today - marketDay) / (24L * 60L * 60L * 1000L)
-        return daysOld in 0..2
+        return daysOld in 0L..2L
     }
 
     private fun getTodayDaySeed(): Int {
