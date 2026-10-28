@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Daily Utility Lab</string>
+    <string name="app_name">Khetrova</string>
     <string name="app_subtitle">भारतीय क्षेत्रीय भूमि मापन, 2D CAD प्लॉट नक्शा एवं निर्माण BOQ इंजन</string>
     <string name="zero_permission_badge">100% ऑफ़लाइन • ज़ीरो परमिशन • पूर्णतः सुरक्षित</string>
     <string name="nav_land_converter">भूमि माप</string>
