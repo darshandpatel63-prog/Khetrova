@@ -70,7 +70,8 @@ object AppLocalizationEngine {
     // 108+ Google Supported Indian & Global Languages
     val allLanguages: List<AppLanguage> = listOf(
         // Primary Default & Indian Languages
-        AppLanguage("en", "English", "English", "Global & India"),
+        AppLanguage("en", "English", "English", "Global"),
+        AppLanguage("en-IN", "English (India)", "English (India)", "India"),
         AppLanguage("gu", "Gujarati", "ગુજરાતી", "India"),
         AppLanguage("hi", "Hindi", "हिन्दी", "India"),
         AppLanguage("mr", "Marathi", "मराठी", "India"),
@@ -249,7 +250,7 @@ object AppLocalizationEngine {
 
     fun getStringsForLanguage(langCode: String): LocalizedUiStrings {
         return when (langCode) {
-            "en" -> englishDefault
+            "en", "en-IN" -> englishDefault
             "gu" -> LocalizedUiStrings(
                 appTitle = "Khetrova (જમીન, રોજમેળ અને બાંધકામ)",
                 appSubtitle = "દેશ-વિદેશના રાજ્યો મુજબ જમીન માપણી, રોજિંદી મંડી-મજૂરી-દલાલી અને બાંધકામ BOQ",
@@ -1110,6 +1111,40 @@ object AppLocalizationEngine {
         }
     }
 
+    private val indiaMarketLanguageCodes = setOf(
+        "en-IN", "gu", "hi", "mr", "ta", "te", "kn", "ml", "bn", "pa", "or", "as",
+        "sa", "kok", "mai", "doi", "mni", "brx", "sat", "ks", "sd"
+    )
+
+    /**
+     * The selected language is only a country hint, not proof of the user's physical location.
+     * A specific non-Indian market label does not imply that its live data feed is connected.
+     */
+    fun getMarketPricesTitle(langCode: String): String = when {
+        langCode == "gu" -> "ભારતના APMC માર્કેટ ભાવ"
+        langCode == "hi" -> "भारत की APMC मंडी के भाव"
+        langCode in indiaMarketLanguageCodes -> "APMC Market Prices (India)"
+        langCode == "ja" -> "Japan Market Prices"
+        langCode == "ko" -> "Korea Market Prices"
+        langCode == "zh-CN" -> "China Market Prices"
+        langCode == "zh-TW" -> "Taiwan Market Prices"
+        langCode == "id" -> "Indonesia Market Prices"
+        langCode == "th" -> "Thailand Market Prices"
+        langCode == "vi" -> "Vietnam Market Prices"
+        langCode == "ne" -> "Nepal Market Prices"
+        langCode == "si" -> "Sri Lanka Market Prices"
+        langCode == "my" -> "Myanmar Market Prices"
+        langCode == "km" -> "Cambodia Market Prices"
+        langCode == "lo" -> "Laos Market Prices"
+        langCode == "mn" -> "Mongolia Market Prices"
+        langCode == "tr" -> "Türkiye Market Prices"
+        langCode == "fa" -> "Iran Market Prices"
+        langCode == "he" -> "Israel Market Prices"
+        langCode == "af" -> "South Africa Market Prices"
+        langCode == "sw" -> "East Africa Market Prices"
+        else -> "Global Agricultural Market Prices"
+    }
+
     /**
      * Returns fully localized Top Menu item (category, title, subtitle, badge) in the user's selected language.
      */
@@ -1121,6 +1156,30 @@ object AppLocalizationEngine {
         defaultSubtitle: String,
         defaultBadge: String
     ): LocalizedMenuEntry {
+        if (destName == "LIVE_APMC_MANDI_PRICES") {
+            val isIndiaMarket = langCode in indiaMarketLanguageCodes
+            val category = when {
+                langCode == "gu" -> "રોજિંદા ખેડૂત, જમીનદાર અને દલાલ સાધનો"
+                langCode == "hi" -> "दैनिक किसान, ज़मींदार व दलाल टूल्स"
+                else -> defaultCategory
+            }
+            val subtitle = when (langCode) {
+                "gu" -> "ભારતના Agmarknet/data.gov.in પરથી મળેલા રોજિંદા બજાર ભાવ. દરેક પાક સાથે બજારની તારીખ દેખાશે; ભાવ ન મળે તો બનાવટી ભાવ નહીં બતાવાય."
+                "hi" -> "भारत के Agmarknet/data.gov.in से मिले दैनिक मंडी भाव। हर भाव के साथ मंडी की तारीख दिखेगी; डेटा न मिलने पर नकली भाव नहीं दिखेंगे।"
+                else -> if (isIndiaMarket) {
+                    "Official daily India Agmarknet prices where records are available. The market date is shown with each quote; missing prices are not generated."
+                } else {
+                    "Prices appear only when a verified country-specific market feed is available. Unavailable markets will not show simulated prices as live."
+                }
+            }
+            val badge = when {
+                isIndiaMarket && langCode == "gu" -> "APMC • ભારત"
+                isIndiaMarket && langCode == "hi" -> "APMC • भारत"
+                isIndiaMarket -> "APMC • India"
+                else -> "Market Data"
+            }
+            return LocalizedMenuEntry(category, getMarketPricesTitle(langCode), subtitle, badge)
+        }
         if (langCode == "en") {
             return LocalizedMenuEntry(defaultCategory, defaultTitle, defaultSubtitle, defaultBadge)
         }
