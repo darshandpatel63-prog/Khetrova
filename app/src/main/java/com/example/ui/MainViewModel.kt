@@ -398,7 +398,7 @@ class MainViewModel(
         viewModelScope.launch {
             repository.seedInitialRecordsIfEmpty()
         }
-        // Automatically sync live daily APMC & Global Govt crop prices on app open
+        // Automatically fetch official daily Indian APMC records on app open
         syncLiveApmcMarketPrices(isSilentStartup = true)
         // Periodic ticker to keep the 1-Hour Rewarded Ad-Free countdown accurate
         viewModelScope.launch {
@@ -1537,7 +1537,7 @@ class MainViewModel(
         viewModelScope.launch {
             _isSyncingLiveApmc.value = true
             if (!isSilentStartup) {
-                _statusBannerMessage.value = "Syncing Live APMC Yard & Global Govt Commodity Rates..."
+                _statusBannerMessage.value = "Fetching official daily India Agmarknet market prices..."
             }
             val syncedSnapshot = LiveApmcMarketEngine.fetchAndSyncLiveApmcRates()
             _liveApmcSyncSnapshot.value = syncedSnapshot
