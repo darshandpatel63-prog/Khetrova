@@ -1156,6 +1156,41 @@ object AppLocalizationEngine {
         defaultSubtitle: String,
         defaultBadge: String
     ): LocalizedMenuEntry {
+        if (destName == "HOW_TO_USE_APP_MANUAL") {
+            return when (langCode) {
+                "gu" -> LocalizedMenuEntry(
+                    category = "મદદ અને શીખવા માટે",
+                    title = "Khetrova કેવી રીતે વાપરવું — સંપૂર્ણ માર્ગદર્શિકા",
+                    subtitle = "જમીન માપ, નકશો, CAD, બાંધકામ, મંડી ભાવ, ખેડૂત સાધનો અને રિપોર્ટ માટે પગલાંવાર માર્ગદર્શન",
+                    badge = "વપરાશ માર્ગદર્શિકા"
+                )
+                "hi" -> LocalizedMenuEntry(
+                    category = "मदद और सीखना",
+                    title = "Khetrova कैसे चलाएँ — पूरी फीचर गाइड",
+                    subtitle = "भूमि मापन, मैप, CAD, निर्माण, मंडी भाव, किसान टूल्स और रिपोर्ट के लिए चरण-दर-चरण मार्गदर्शन",
+                    badge = "उपयोग गाइड"
+                )
+                "mr" -> LocalizedMenuEntry(
+                    category = "मदत आणि शिकणे",
+                    title = "Khetrova कसे वापरावे — संपूर्ण मार्गदर्शक",
+                    subtitle = "जमीन मोजमाप, नकाशा, CAD, बांधकाम, बाजारभाव आणि अहवालांसाठी टप्प्याटप्प्याने मार्गदर्शन",
+                    badge = "वापर मार्गदर्शक"
+                )
+                "en-IN" -> LocalizedMenuEntry(
+                    category = "Help & Learning",
+                    title = "How to Use Khetrova — Full Feature Manual",
+                    subtitle = "Step-by-step help for every major feature, with guidance translated on-device when supported",
+                    badge = "User Manual"
+                )
+                else -> LocalizedMenuEntry(
+                    category = "Help & Learning",
+                    title = "How to Use Khetrova — Full Feature Manual",
+                    subtitle = "Step-by-step guidance for land units, map survey, CAD, materials, market prices, farmer tools, Vault and PDFs. The manual attempts on-device translation where supported.",
+                    badge = "User Manual"
+                )
+            }
+        }
+
         if (destName == "LIVE_APMC_MANDI_PRICES") {
             val isIndiaMarket = langCode in indiaMarketLanguageCodes
             val category = when {
