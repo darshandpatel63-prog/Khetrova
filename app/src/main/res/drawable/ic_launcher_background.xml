@@ -13,18 +13,9 @@
                 android:endX="108"
                 android:endY="108"
                 android:type="linear">
-                <item
-                    android:color="#0D3B2E"
-                    android:offset="0.0" />
-                <item
-                    android:color="#1B5E49"
-                    android:offset="1.0" />
+                <item android:color="#052B29" android:offset="0.0" />
+                <item android:color="#0C5A43" android:offset="1.0" />
             </gradient>
         </aapt:attr>
     </path>
-    <!-- Subtle architectural grid lines -->
-    <path
-        android:pathData="M0,36L108,36M0,72L108,72M36,0L36,108M72,0L72,108"
-        android:strokeWidth="0.7"
-        android:strokeColor="#22FFFFFF" />
 </vector>
