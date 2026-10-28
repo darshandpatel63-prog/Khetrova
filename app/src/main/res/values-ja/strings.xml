@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Daily Utility Lab</string>
+    <string name="app_subtitle">インド地域土地単位換算・2D CAD不整形地測量・建築資材BOQ計算機</string>
+    <string name="zero_permission_badge">100% オフライン • 権限不要 • クラウド送信ゼロ</string>
+    <string name="nav_land_converter">土地単位</string>
+    <string name="nav_irregular_plot">CAD測量</string>
+    <string name="nav_construction">建築資材</string>
+    <string name="nav_vault_system">保管庫・コード</string>
+    <string name="btn_save_record">ローカル保存</string>
+    <string name="btn_export_pdf">PDFレポート出力</string>
+    <string name="section_regional_state">州・地域の土地測量基準を選択</string>
+    <string name="section_plot_dimensions">4辺不整形地の寸法入力</string>
+    <string name="section_construction_type">建築積算モジュールを選択</string>
+    <string name="section_saved_records">保存済み測量・BOQデータベース</string>
+    <string name="section_polyglot_engines">多言語数学エンジン (Rust, C++, Python, C#, Dart, Shell)</string>
+    <string name="section_legal_compliance">法務・プライバシー・セキュリティ規約</string>
+</resources>

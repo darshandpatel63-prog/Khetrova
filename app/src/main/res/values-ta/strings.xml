@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Daily Utility Lab</string>
+    <string name="app_subtitle">இந்திய மாநில நில அளவை, 2D CAD வரைபடம் &amp; கட்டுமான பொருட்கள் BOQ</string>
+    <string name="zero_permission_badge">100% ஆஃப்லைன் • அனுமதி தேவையில்லை • பாதுகாப்பானது</string>
+    <string name="nav_land_converter">நில அளவை</string>
+    <string name="nav_irregular_plot">வரைபடம் CAD</string>
+    <string name="nav_construction">கட்டுமானம்</string>
+    <string name="nav_vault_system">சேமிப்பு &amp; கோட்</string>
+    <string name="btn_save_record">சேமிக்கவும்</string>
+    <string name="btn_export_pdf">PDF பதிவிறக்கம்</string>
+    <string name="section_regional_state">மாநில நில அளவை முறையைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="section_plot_dimensions">4 பக்க ஒழுங்கற்ற நில அளவுகள்</string>
+    <string name="section_construction_type">கட்டுமான கணக்கீட்டுப் பிரிவைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="section_saved_records">சேமிக்கப்பட்ட நில அளவை &amp; BOQ</string>
+    <string name="section_polyglot_engines">பன்மொழி கணித எஞ்சின் (Rust, C++, Python, C#, Dart, Shell)</string>
+    <string name="section_legal_compliance">சட்டம், தனியுரிமை &amp; பாதுகாப்பு கொள்கைகள்</string>
+</resources>

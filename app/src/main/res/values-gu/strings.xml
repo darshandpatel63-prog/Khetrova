@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Daily Utility Lab</string>
+    <string name="app_subtitle">ભારતીય પ્રાદેશિક જમીન માપણી, 2D CAD નકશો અને બાંધકામ BOQ એન્જિન</string>
+    <string name="zero_permission_badge">૧૦૦% ઓફલાઇન • ઝીરો પરમિશન • સંપૂર્ણ સુરક્ષિત</string>
+    <string name="nav_land_converter">જમીન માપ</string>
+    <string name="nav_irregular_plot">પ્લોટ CAD</string>
+    <string name="nav_construction">બાંધકામ</string>
+    <string name="nav_vault_system">વોલ્ટ અને કોડ</string>
+    <string name="btn_save_record">વોલ્ટમાં સેવ કરો</string>
+    <string name="btn_export_pdf">PDF રિપોર્ટ કાઢો</string>
+    <string name="section_regional_state">રાજ્ય મુજબ જમીન માપણીનું ધોરણ પસંદ કરો</string>
+    <string name="section_plot_dimensions">૪-ખૂણાવાળા અનિયમિત પ્લોટનું માપ</string>
+    <string name="section_construction_type">બાંધકામ ગણતરી વિભાગ પસંદ કરો</string>
+    <string name="section_saved_records">સેવ કરેલા સર્વે અને મટીરીયલ BOQ વોલ્ટ</string>
+    <string name="section_polyglot_engines">પોલીગ્લોટ ગાણિતિક એન્જિન (Rust, C++, Python, C#, Dart, Shell)</string>
+    <string name="section_legal_compliance">કાયદાકીય, પ્રાઇવસી અને સુરક્ષા પોલિસી</string>
+</resources>

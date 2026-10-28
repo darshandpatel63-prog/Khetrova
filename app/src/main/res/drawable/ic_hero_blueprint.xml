@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="140dp"
+    android:viewportWidth="320"
+    android:viewportHeight="140">
+    <!-- Subtle CAD blueprint grid -->
+    <path
+        android:pathData="M0,28L320,28M0,56L320,56M0,84L320,84M0,112L320,112M40,0L40,140M80,0L80,140M120,0L120,140M160,0L160,140M200,0L200,140M240,0L240,140M280,0L280,140"
+        android:strokeWidth="0.6"
+        android:strokeColor="#22FFFFFF" />
+    <!-- Surveyed Irregular Land Polygon on Left -->
+    <path
+        android:fillColor="#28F59E0B"
+        android:pathData="M26,34L118,22L134,108L34,116Z"
+        android:strokeWidth="2.4"
+        android:strokeColor="#F59E0B" />
+    <path
+        android:pathData="M26,34L134,108"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FDE68A" />
+    <!-- Isometric Construction Wall & Tile Grid on Right -->
+    <path
+        android:fillColor="#2834D399"
+        android:pathData="M180,36L288,36L288,112L180,112Z"
+        android:strokeWidth="2"
+        android:strokeColor="#34D399" />
+    <path
+        android:pathData="M216,36L216,112M252,36L252,112M180,62L288,62M180,88L288,88"
+        android:strokeWidth="1.2"
+        android:strokeColor="#6EE7B7" />
+    <!-- Survey vertices -->
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M26,34m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M118,22m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M134,108m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M34,116m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+</vector>
