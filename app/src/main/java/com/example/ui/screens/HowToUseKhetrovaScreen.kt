@@ -108,7 +108,7 @@ fun HowToUseKhetrovaScreen(
         mutableStateOf("Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions.")
     }
     var footerNote by remember {
-        mutableStateOf("Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently.")
+        mutableStateOf("Translation powered by Google ML Kit where supported. This guide is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently.")
     }
     var translationStatus by remember { mutableStateOf("English manual ready.") }
     var isTranslating by remember { mutableStateOf(false) }
@@ -128,7 +128,7 @@ fun HowToUseKhetrovaScreen(
         pageTitle = "How to Use Khetrova"
         introHeading = "Complete feature manual"
         introBody = "Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions."
-        footerNote = "Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."
+        footerNote = "Translation powered by Google ML Kit where supported. This guide is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."
         val targetLanguage = mlKitTargetLanguage(selectedLanguage.code)
         if (targetLanguage == TranslateLanguage.ENGLISH) {
             translationStatus = if (selectedLanguage.code == "en-IN") "English (India) manual selected." else "English manual selected."
@@ -156,7 +156,7 @@ fun HowToUseKhetrovaScreen(
             pageTitle = awaitStringTask(translator.translate("How to Use Khetrova"))
             introHeading = awaitStringTask(translator.translate("Complete feature manual"))
             introBody = awaitStringTask(translator.translate("Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions."))
-            footerNote = awaitStringTask(translator.translate("Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."))
+            footerNote = awaitStringTask(translator.translate("Translation powered by Google ML Kit where supported. This guide is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."))
             displayedParagraphs = khetrovaManualEnglish.map { paragraph ->
                 ManualParagraph(
                     heading = awaitStringTask(translator.translate(paragraph.heading)),
@@ -166,6 +166,10 @@ fun HowToUseKhetrovaScreen(
             translationStatus = "Manual translated on this device to ${selectedLanguage.nativeName}. Machine translation may be imperfect."
         } catch (_: Exception) {
             displayedParagraphs = khetrovaManualEnglish
+            pageTitle = "How to Use Khetrova"
+            introHeading = "Complete feature manual"
+            introBody = "Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions."
+            footerNote = "Translation powered by Google ML Kit where supported. This guide is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."
             translationStatus = "Translation could not be downloaded or completed. The manual is shown in English."
         } finally {
             translator.close()
@@ -234,6 +238,10 @@ fun HowToUseKhetrovaScreen(
                 }
             }
 
+            item {
+                AdMobNativeAdCard(slotIndex = 99)
+            }
+
             itemsIndexed(rows, key = { _, row -> row.key }) { _, row ->
                 when (row) {
                     is ManualListRow.Content -> Card(
@@ -271,6 +279,10 @@ fun HowToUseKhetrovaScreen(
                         modifier = Modifier.padding(14.dp)
                     )
                 }
+            }
+
+            item {
+                AdMobNativeAdCard(slotIndex = 199)
             }
         }
     }
