@@ -79,6 +79,7 @@ fun IrregularPlotScreen(
     val rateSqFtText by viewModel.plotRatePerSqFtText.collectAsStateWithLifecycle()
     val plotResult by viewModel.irregularPlotResult.collectAsStateWithLifecycle()
     val hasAllMeasurements = listOf(northText, eastText, southText, westText).all { it.toDoubleOrNull()?.let { value -> value > 0.0 } == true }
+    val hasValidPlotRate = rateSqFtText.toDoubleOrNull()?.let { it > 0.0 } == true
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -187,7 +188,11 @@ fun IrregularPlotScreen(
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Discrepancy Prevented: ${LandAndConstructionEngine.formatDec(absError)} Sq.Ft (${LandAndConstructionEngine.formatCurrency(abs(plotResult.contractorErrorInr))} @ ₹$rateSqFtText/sq.ft)",
+                            text = if (hasValidPlotRate) {
+                                "Discrepancy Prevented: ${LandAndConstructionEngine.formatDec(absError)} Sq.Ft (${LandAndConstructionEngine.formatCurrency(abs(plotResult.contractorErrorInr))} at ₹$rateSqFtText/sq.ft)"
+                            } else {
+                                "Area discrepancy: ${LandAndConstructionEngine.formatDec(absError)} Sq.Ft • Enter an actual rate to estimate the money difference."
+                            },
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -386,18 +391,26 @@ fun IrregularPlotScreen(
                         }
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
+                        if (hasValidPlotRate) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = uiStrings.basePlotValue,
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Text(
+                                    text = LandAndConstructionEngine.formatCurrency(plotResult.estimatedPlotValueInr),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        } else {
                             Text(
-                                text = uiStrings.basePlotValue,
-                                style = MaterialTheme.typography.titleSmall
-                            )
-                            Text(
-                                text = LandAndConstructionEngine.formatCurrency(plotResult.estimatedPlotValueInr),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.primary
+                                text = "Enter your actual land rate per square foot to estimate the plot value.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
