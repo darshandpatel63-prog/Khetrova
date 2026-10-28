@@ -80,7 +80,8 @@ enum class QuickFeatureDestination {
     SAVED_SURVEY_VAULT,
     REWARDED_1HR_AD_FREE,
     LANGUAGE_SWITCHER_115,
-    LEGAL_AND_PRIVACY
+    LEGAL_AND_PRIVACY,
+    HOW_TO_USE_APP_MANUAL
 }
 
 class MainViewModel(
@@ -97,6 +98,9 @@ class MainViewModel(
     // --- All-Features Top Menu & Deep-Link Sub-Screen Navigation State ---
     private val _isAllFeaturesMenuOpen = MutableStateFlow(false)
     val isAllFeaturesMenuOpen: StateFlow<Boolean> = _isAllFeaturesMenuOpen.asStateFlow()
+
+    private val _isHowToUseManualOpen = MutableStateFlow(false)
+    val isHowToUseManualOpen: StateFlow<Boolean> = _isHowToUseManualOpen.asStateFlow()
 
     private val _selectedVaultSubSection = MutableStateFlow(VaultSubSection.DAILY_ROJMEL_MANDI_BROKER)
     val selectedVaultSubSection: StateFlow<VaultSubSection> = _selectedVaultSubSection.asStateFlow()
@@ -531,6 +535,10 @@ class MainViewModel(
         _isAllFeaturesMenuOpen.value = open
     }
 
+    fun closeHowToUseManual() {
+        _isHowToUseManualOpen.value = false
+    }
+
     fun selectVaultSubSection(subSection: VaultSubSection) {
         _selectedVaultSubSection.value = subSection
     }
@@ -550,6 +558,10 @@ class MainViewModel(
     fun navigateToQuickFeature(destination: QuickFeatureDestination) {
         _isAllFeaturesMenuOpen.value = false
         when (destination) {
+            QuickFeatureDestination.HOW_TO_USE_APP_MANUAL -> {
+                _isHowToUseManualOpen.value = true
+                _statusBannerMessage.value = "Opened the How to Use Khetrova feature manual"
+            }
             QuickFeatureDestination.KHET_TALAVDI_WATER_TANK -> {
                 _selectedTab.value = AppTab.VAULT_SYSTEM
                 _selectedVaultSubSection.value = VaultSubSection.FARM_712_AND_WATER_TOOLS
