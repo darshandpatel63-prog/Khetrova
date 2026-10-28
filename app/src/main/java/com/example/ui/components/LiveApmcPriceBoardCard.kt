@@ -159,7 +159,7 @@ fun LiveApmcPriceBoardCard(
                                 color = if (snapshot.isOnlineSynced) Color.White else MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Text(
-                                text = "Last Auto-Update: ${snapshot.lastUpdatedTimeFormatted} • Tap any crop to auto-fill Mandi Bill",
+                                text = "Last feed check: ${snapshot.lastUpdatedTimeFormatted} • Check each quote’s market date for price freshness.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (snapshot.isOnlineSynced) Color(0xFFD1FAE5) else MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
                             )
