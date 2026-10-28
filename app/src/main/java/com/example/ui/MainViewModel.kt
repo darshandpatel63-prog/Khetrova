@@ -185,19 +185,19 @@ class MainViewModel(
     val mapPolygonSurveyResult: StateFlow<GeodesicPolygonSurveyResult> = _mapPolygonSurveyResult.asStateFlow()
 
     // --- Tab 3: Irregular 4-Sided Plot CAD State ---
-    private val _northSideText = MutableStateFlow("50")
+    private val _northSideText = MutableStateFlow("")
     val northSideText: StateFlow<String> = _northSideText.asStateFlow()
 
-    private val _eastSideText = MutableStateFlow("40")
+    private val _eastSideText = MutableStateFlow("")
     val eastSideText: StateFlow<String> = _eastSideText.asStateFlow()
 
-    private val _southSideText = MutableStateFlow("56")
+    private val _southSideText = MutableStateFlow("")
     val southSideText: StateFlow<String> = _southSideText.asStateFlow()
 
-    private val _westSideText = MutableStateFlow("44")
+    private val _westSideText = MutableStateFlow("")
     val westSideText: StateFlow<String> = _westSideText.asStateFlow()
 
-    private val _diagonalSideText = MutableStateFlow("68")
+    private val _diagonalSideText = MutableStateFlow("")
     val diagonalSideText: StateFlow<String> = _diagonalSideText.asStateFlow()
 
     private val _plotRatePerSqFtText = MutableStateFlow("3500")
@@ -983,14 +983,18 @@ class MainViewModel(
     }
 
     fun autoCalibrateDiagonal() {
-        val n = _northSideText.value.toDoubleOrNull() ?: 50.0
-        val e = _eastSideText.value.toDoubleOrNull() ?: 40.0
-        val s = _southSideText.value.toDoubleOrNull() ?: 56.0
-        val w = _westSideText.value.toDoubleOrNull() ?: 44.0
+        if (!hasValidIrregularPlotInputs()) {
+            _statusBannerMessage.value = "Enter all four actual boundary sides before calibrating a diagonal."
+            return
+        }
+        val n = _northSideText.value.toDoubleOrNull() ?: 0.0
+        val e = _eastSideText.value.toDoubleOrNull() ?: 0.0
+        val s = _southSideText.value.toDoubleOrNull() ?: 0.0
+        val w = _westSideText.value.toDoubleOrNull() ?: 0.0
         val opt = LandAndConstructionEngine.calculateOptimalDiagonal(n, e, s, w)
         _diagonalSideText.value = LandAndConstructionEngine.formatDec(opt, 1)
         _irregularPlotResult.value = computeCurrentIrregularPlot()
-        _statusBannerMessage.value = "Calibrated orthogonal diagonal to ${LandAndConstructionEngine.formatDec(opt, 1)} ft"
+        _statusBannerMessage.value = "Calibrated diagonal from the four entered boundary sides to ${LandAndConstructionEngine.formatDec(opt, 1)} ft"
     }
 
     fun applyPlotPreset(north: Double, east: Double, south: Double, west: Double, diag: Double) {
@@ -1002,11 +1006,15 @@ class MainViewModel(
         _irregularPlotResult.value = computeCurrentIrregularPlot()
     }
 
+    private fun hasValidIrregularPlotInputs(): Boolean =
+        listOf(_northSideText.value, _eastSideText.value, _southSideText.value, _westSideText.value)
+            .all { it.toDoubleOrNull()?.let { value -> value > 0.0 } == true }
+
     private fun computeCurrentIrregularPlot(): IrregularPlotResult {
-        val n = _northSideText.value.toDoubleOrNull() ?: 50.0
-        val e = _eastSideText.value.toDoubleOrNull() ?: 40.0
-        val s = _southSideText.value.toDoubleOrNull() ?: 56.0
-        val w = _westSideText.value.toDoubleOrNull() ?: 44.0
+        val n = _northSideText.value.toDoubleOrNull() ?: 0.0
+        val e = _eastSideText.value.toDoubleOrNull() ?: 0.0
+        val s = _southSideText.value.toDoubleOrNull() ?: 0.0
+        val w = _westSideText.value.toDoubleOrNull() ?: 0.0
         val d = _diagonalSideText.value.toDoubleOrNull() ?: 0.0
         val rate = _plotRatePerSqFtText.value.toDoubleOrNull() ?: 1500.0
         return LandAndConstructionEngine.evaluateIrregularPlot(
