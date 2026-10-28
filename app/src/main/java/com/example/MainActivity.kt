@@ -100,6 +100,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.ads.MobileAds
 import com.example.data.local.AppDatabase
 import com.example.data.repository.SurveyRepository
 import com.example.domain.AppLanguage
@@ -124,6 +125,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // AndroidManifest currently contains Google's official test App ID. Replace it with
+        // Khetrova's own AdMob App ID before production ad serving.
+        MobileAds.initialize(this) { }
 
         val database = AppDatabase.getInstance(applicationContext)
         val repository = SurveyRepository(database.surveyDao())
