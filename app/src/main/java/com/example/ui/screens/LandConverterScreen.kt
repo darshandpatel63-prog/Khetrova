@@ -52,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.AppLocalizationEngine
 import com.example.domain.LandAndConstructionEngine
 import com.example.ui.MainViewModel
 import com.example.ui.QuickFeatureDestination
@@ -64,6 +65,7 @@ fun LandConverterScreen(
 ) {
     val context = LocalContext.current
     val uiStrings by viewModel.uiStrings.collectAsStateWithLifecycle()
+    val selectedLanguage by viewModel.selectedLanguage.collectAsStateWithLifecycle()
     val selectedProfile by viewModel.selectedStateProfile.collectAsStateWithLifecycle()
     val selectedUnit by viewModel.selectedInputUnit.collectAsStateWithLifecycle()
     val inputValueText by viewModel.landInputValueText.collectAsStateWithLifecycle()
@@ -123,7 +125,7 @@ fun LandConverterScreen(
                                 onClick = { viewModel.navigateToQuickFeature(QuickFeatureDestination.LIVE_APMC_MANDI_PRICES) },
                                 modifier = Modifier.testTag("quick_btn_live_apmc_prices")
                             ) {
-                                Text("★ Live APMC & Global Bhav (લાઈવ યાર્ડ ભાવ)")
+                                Text("★ " + AppLocalizationEngine.getMarketPricesTitle(selectedLanguage.code))
                             }
                             OutlinedButton(
                                 onClick = { viewModel.navigateToQuickFeature(QuickFeatureDestination.DAILY_MANDI_BILL) },
