@@ -198,7 +198,7 @@ object AppLocalizationEngine {
     )
 
     val englishDefault = LocalizedUiStrings(
-        appTitle = "Daily Utility Lab",
+        appTitle = "Khetrova",
         appSubtitle = "Global & Regional Land Survey, Daily Rojmel, 3D Map & Construction BOQ",
         zeroPermissionBadge = "100% Offline • Zero Permissions • Zero Cloud Tracking",
         navLandUnits = "Land Units",
@@ -251,7 +251,7 @@ object AppLocalizationEngine {
         return when (langCode) {
             "en" -> englishDefault
             "gu" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (જમીન, રોજમેળ અને બાંધકામ)",
+                appTitle = "Khetrova (જમીન, રોજમેળ અને બાંધકામ)",
                 appSubtitle = "દેશ-વિદેશના રાજ્યો મુજબ જમીન માપણી, રોજિંદી મંડી-મજૂરી-દલાલી અને બાંધકામ BOQ",
                 zeroPermissionBadge = "૧૦૦% ઓફલાઇન • ઝીરો પરમિશન • સંપૂર્ણ સુરક્ષિત",
                 navLandUnits = "જમીન માપ",
@@ -300,7 +300,7 @@ object AppLocalizationEngine {
                 allFeaturesSearchHint = "સાધન શોધો (મંડી, મજૂરી, દલાલી, ખેત-તળાવડી, ૭/૧૨, ટાઇલ્સ, 3D)..."
             )
             "hi", "mai", "doi", "kok", "brx", "ne" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (भूमि, रोज़मेल एवं निर्माण गणना)",
+                appTitle = "Khetrova (भूमि, रोज़मेल एवं निर्माण गणना)",
                 appSubtitle = "देश-विदेश के राज्यों अनुसार भूमि मापन, दैनिक मंडी-मज़दूरी-दलाली व निर्माण BOQ",
                 zeroPermissionBadge = "100% ऑफ़लाइन • ज़ीरो परमिशन • पूर्णतः सुरक्षित",
                 navLandUnits = "भूमि माप",
@@ -349,7 +349,7 @@ object AppLocalizationEngine {
                 allFeaturesSearchHint = "टूल खोजें (मंडी, मज़दूरी, दलाली, खेत-तालाब, 7/12, टाइल्स)..."
             )
             "mr" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (जमीन व बांधकाम मोजणी)",
+                appTitle = "Khetrova (जमीन व बांधकाम मोजणी)",
                 appSubtitle = "भारतीय प्रादेशिक जमीन मोजणी, 2D CAD नकाशा आणि बांधकाम साहित्य BOQ",
                 zeroPermissionBadge = "१००% ऑफलाइन • झिरो परमिशन • झिरो क्लाउड ट्रॅकिंग",
                 navLandUnits = "जमीन एकक",
@@ -391,7 +391,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "भाषा शोधा..."
             )
             "ta" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (நிலம் & கட்டுமான கணக்கீடு)",
+                appTitle = "Khetrova (நிலம் & கட்டுமான கணக்கீடு)",
                 appSubtitle = "இந்திய மாநில நில அளவை, 2D CAD வரைபடம் & கட்டுமான பொருட்கள் BOQ",
                 zeroPermissionBadge = "100% ஆஃப்லைன் • அனுமதி தேவையில்லை • பாதுகாப்பானது",
                 navLandUnits = "நில அளவை",
@@ -433,7 +433,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "மொழியைத் தேடுங்கள்..."
             )
             "te" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (భూమి & నిర్మాణ గణన)",
+                appTitle = "Khetrova (భూమి & నిర్మాణ గణన)",
                 appSubtitle = "భారతీయ ప్రాంతీయ భూమి కొలత, 2D CAD ప్లాట్ & నిర్మాణ సామగ్రి BOQ",
                 zeroPermissionBadge = "100% ఆఫ్‌లైన్ • జీరో పర్మిషన్ • పూర్తిగా సురక్షితం",
                 navLandUnits = "భూమి కొలతలు",
@@ -475,7 +475,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "భాషను వెతకండి..."
             )
             "kn" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (ಭೂమి ಮತ್ತು ನಿರ್ಮಾಣ ಲೆಕ್ಕಾಚಾರ)",
+                appTitle = "Khetrova (ಭೂమి ಮತ್ತು ನಿರ್ಮಾಣ ಲೆಕ್ಕಾಚಾರ)",
                 appSubtitle = "ಭಾರತೀಯ ಪ್ರಾದೇಶಿಕ ಭೂ ಮಾಪನ, 2D CAD ನಕ್ಷೆ ಮತ್ತು ನಿರ್ಮಾಣ BOQ",
                 zeroPermissionBadge = "100% ಆಫ್‌ಲೈನ್ • ಶೂನ್ಯ ಅನುಮತಿ • ಸಂಪೂರ್ಣ സുരക്ഷಿತ",
                 navLandUnits = "ಭೂ ಮಾಪನ",
@@ -517,7 +517,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "ಭಾಷೆ ಹುಡುಕಿ..."
             )
             "ml" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (ഭൂമി & നിർമ്മാണ കണക്കുകൾ)",
+                appTitle = "Khetrova (ഭൂമി & നിർമ്മാണ കണക്കുകൾ)",
                 appSubtitle = "ഇന്ത്യൻ പ്രാദേശിക ഭൂമി അളവ്, 2D CAD പ്ലോട്ട് & നിർമ്മാണ BOQ",
                 zeroPermissionBadge = "100% ഓഫ്‌ലൈൻ • സീറോ പെർമിഷൻ • സുരക്ഷിതം",
                 navLandUnits = "ഭൂമി അളവ്",
@@ -559,7 +559,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "ഭാഷ തിരയുക..."
             )
             "bn", "as", "mni" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (জমি ও নির্মাণ ক্যালকুলেটর)",
+                appTitle = "Khetrova (জমি ও নির্মাণ ক্যালকুলেটর)",
                 appSubtitle = "ভারতীয় আঞ্চলিক ভূমি পরিমাপ, 2D CAD নকশা এবং নির্মাণ BOQ ইঞ্জিন",
                 zeroPermissionBadge = "১০০% অফলাইন • জিরো পারমিশন • সম্পূর্ণ নিরাপদ",
                 navLandUnits = "জমির মাপ",
@@ -601,7 +601,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "ভাষা খুঁজুন..."
             )
             "pa" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (ਜ਼ਮੀਨ ਅਤੇ ਉਸਾਰੀ ਕੈਲਕੁਲੇਟਰ)",
+                appTitle = "Khetrova (ਜ਼ਮੀਨ ਅਤੇ ਉਸਾਰੀ ਕੈਲਕੁਲੇਟਰ)",
                 appSubtitle = "ਭਾਰਤੀ ਖੇਤਰੀ ਜ਼ਮੀਨ ਮਾਪ, 2D CAD ਨਕਸ਼ਾ ਅਤੇ ਉਸਾਰੀ ਸਮੱਗਰੀ BOQ",
                 zeroPermissionBadge = "100% ਆਫ਼ਲਾਈਨ • ਜ਼ੀਰੋ ਪਰਮਿਸ਼ਨ • ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੁਰੱਖਿਅਤ",
                 navLandUnits = "ਜ਼ਮੀਨ ਮਾਪ",
@@ -643,7 +643,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "ਭਾਸ਼ਾ ਖੋਜੋ..."
             )
             "or" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (ଜମି ଓ ନିର୍ମାଣ କାଲକୁଲେଟର)",
+                appTitle = "Khetrova (ଜମି ଓ ନିର୍ମାଣ କାଲକୁଲେଟର)",
                 appSubtitle = "ଭାରତୀୟ ଆଞ୍ଚଳିକ ଜମି ମାପ, 2D CAD ନକ୍ସା ଏବଂ ନିର୍ମାଣ ସାମଗ୍ରୀ BOQ",
                 zeroPermissionBadge = "100% ଅଫଲାଇନ୍ • ଜିରୋ ପରମିଶନ୍ • ସମ୍ପୂର୍ଣ୍ଣ ସୁରକ୍ଷିତ",
                 navLandUnits = "ଜମି ମାପ",
@@ -685,7 +685,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "ଭାଷା ଖୋଜନ୍ତୁ..."
             )
             "sa" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (भूमि-निर्माण-गणकम्)",
+                appTitle = "Khetrova (भूमि-निर्माण-गणकम्)",
                 appSubtitle = "भारतीय-भूमि-मापनम्, 2D CAD क्षेत्र-चित्रणं निर्माण-द्रव्य-गणनं च",
                 zeroPermissionBadge = "१००% ऑफलाइन • शून्यानुमतिः • पूर्णसुरक्षितम्",
                 navLandUnits = "भूमिमापनम्",
@@ -727,7 +727,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "भाषां अन्विष्यताम्..."
             )
             "ja" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (土地測量・建築積算エンジン)",
+                appTitle = "Khetrova (土地測量・建築積算エンジン)",
                 appSubtitle = "インド地域土地単位換算・2D CAD不整形地測量・建築資材BOQ計算機",
                 zeroPermissionBadge = "100% オフライン • 権限不要 • クラウド送信ゼロ",
                 navLandUnits = "土地単位",
@@ -769,7 +769,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "言語を検索 (例: 日本語, ગુજરાતી, हिन्दी)..."
             )
             "ko" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (토지 측량 및 건축 적산 엔진)",
+                appTitle = "Khetrova (토지 측량 및 건축 적산 엔진)",
                 appSubtitle = "지역 토지 단위 변환, 2D CAD 부정형 플롯 도면 및 건축 자재 BOQ 계산기",
                 zeroPermissionBadge = "100% 오프라인 • 권한 불필요 • 클라우드 추적 없음",
                 navLandUnits = "토지 단위",
@@ -811,7 +811,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "언어 검색..."
             )
             "zh-CN", "zh-TW" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (土地测量与建筑工程量计算)",
+                appTitle = "Khetrova (土地测量与建筑工程量计算)",
                 appSubtitle = "区域土地单位换算、2D CAD不规则地块绘图与建筑材料BOQ引擎",
                 zeroPermissionBadge = "100% 离线运行 • 零权限要求 • 零云端追踪",
                 navLandUnits = "土地单位",
@@ -853,7 +853,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "搜索语言..."
             )
             "ar", "ur", "fa", "ps", "sd", "he", "ug", "yi" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (حاسبة الأراضي والبناء)",
+                appTitle = "Khetrova (حاسبة الأراضي والبناء)",
                 appSubtitle = "تحويل وحدات الأراضي، مخطط 2D CAD وحساب كميات مواد البناء BOQ",
                 zeroPermissionBadge = "100% بدون إنترنت • بدون أذونات • خصوصية تامة",
                 navLandUnits = "وحدات الأرض",
@@ -895,7 +895,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "ابحث عن اللغة..."
             )
             "es", "pt", "ca", "gl" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (Topografía y Construcción)",
+                appTitle = "Khetrova (Topografía y Construcción)",
                 appSubtitle = "Conversor de Unidades de Tierra, Plano CAD 2D y Presupuesto BOQ de Obra",
                 zeroPermissionBadge = "100% Sin Conexión • Cero Permisos • Privacidad Total",
                 navLandUnits = "Unidades",
@@ -937,7 +937,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "Buscar idioma..."
             )
             "fr", "ht", "co", "lb" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (Arpentage & Construction)",
+                appTitle = "Khetrova (Arpentage & Construction)",
                 appSubtitle = "Convertisseur Foncier Régional, Plan CAD 2D & Devis Matériaux BOQ",
                 zeroPermissionBadge = "100% Hors-Ligne • Zéro Permission • Zéro Suivi Cloud",
                 navLandUnits = "Unités Foncières",
@@ -979,7 +979,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "Rechercher une langue..."
             )
             "de", "nl", "af", "fy", "da", "sv", "no", "is" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (Landvermessung & Bau-BOQ)",
+                appTitle = "Khetrova (Landvermessung & Bau-BOQ)",
                 appSubtitle = "Regionale Flächeneinheiten, 2D-CAD-Grundstücksplan & Baumaterialrechner",
                 zeroPermissionBadge = "100% Offline • Keine Berechtigungen • Kein Cloud-Tracking",
                 navLandUnits = "Flächeneinheiten",
@@ -1021,7 +1021,7 @@ object AppLocalizationEngine {
                 searchLanguageHint = "Sprache suchen..."
             )
             "ru", "uk", "be", "bg", "sr", "mk", "kk", "ky", "tg", "tt", "mn" -> LocalizedUiStrings(
-                appTitle = "Daily Utility Lab (Геодезия и Расчет Стройматериалов)",
+                appTitle = "Khetrova (Геодезия и Расчет Стройматериалов)",
                 appSubtitle = "Конвертер земельных единиц, 2D CAD план участка и смета материалов BOQ",
                 zeroPermissionBadge = "100% Офлайн • Без разрешений • Без облачной слежки",
                 navLandUnits = "Единицы земли",
@@ -1073,7 +1073,7 @@ object AppLocalizationEngine {
                 val lang = allLanguages.find { it.code == langCode }
                 val badgeSuffix = if (lang != null) " [${lang.nativeName} • ${lang.englishName}]" else ""
                 englishDefault.copy(
-                    appTitle = "Daily Utility Lab$badgeSuffix",
+                    appTitle = "Khetrova$badgeSuffix",
                     appSubtitle = "${lang?.nativeName ?: langCode} Edition • Global Land Survey, Daily Rojmel, 3D Map & BOQ",
                     languagePickerTitle = "Select App Language (${lang?.nativeName ?: "115+ Languages"})",
                     menuAllToolsBtn = "Menu • ${lang?.nativeName ?: "All Tools"}",
