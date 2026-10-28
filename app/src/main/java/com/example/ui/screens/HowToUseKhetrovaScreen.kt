@@ -102,6 +102,14 @@ fun HowToUseKhetrovaScreen(
     onBack: () -> Unit
 ) {
     var displayedParagraphs by remember { mutableStateOf(khetrovaManualEnglish) }
+    var pageTitle by remember { mutableStateOf("How to Use Khetrova") }
+    var introHeading by remember { mutableStateOf("Complete feature manual") }
+    var introBody by remember {
+        mutableStateOf("Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions.")
+    }
+    var footerNote by remember {
+        mutableStateOf("Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently.")
+    }
     var translationStatus by remember { mutableStateOf("English manual ready.") }
     var isTranslating by remember { mutableStateOf(false) }
     val rows = remember(displayedParagraphs) {
@@ -117,6 +125,10 @@ fun HowToUseKhetrovaScreen(
 
     LaunchedEffect(selectedLanguage.code) {
         displayedParagraphs = khetrovaManualEnglish
+        pageTitle = "How to Use Khetrova"
+        introHeading = "Complete feature manual"
+        introBody = "Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions."
+        footerNote = "Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."
         val targetLanguage = mlKitTargetLanguage(selectedLanguage.code)
         if (targetLanguage == TranslateLanguage.ENGLISH) {
             translationStatus = if (selectedLanguage.code == "en-IN") "English (India) manual selected." else "English manual selected."
@@ -141,6 +153,10 @@ fun HowToUseKhetrovaScreen(
         try {
             awaitVoidTask(translator.downloadModelIfNeeded(DownloadConditions.Builder().build()))
             translationStatus = "Translating the manual on this device…"
+            pageTitle = awaitStringTask(translator.translate("How to Use Khetrova"))
+            introHeading = awaitStringTask(translator.translate("Complete feature manual"))
+            introBody = awaitStringTask(translator.translate("Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions."))
+            footerNote = awaitStringTask(translator.translate("Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently."))
             displayedParagraphs = khetrovaManualEnglish.map { paragraph ->
                 ManualParagraph(
                     heading = awaitStringTask(translator.translate(paragraph.heading)),
@@ -162,7 +178,7 @@ fun HowToUseKhetrovaScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("How to Use Khetrova")
+                        Text(pageTitle)
                         Text(selectedLanguage.nativeName, style = MaterialTheme.typography.labelSmall)
                     }
                 },
@@ -197,10 +213,10 @@ fun HowToUseKhetrovaScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(Icons.Default.MenuBook, contentDescription = null)
-                            Text("Complete feature manual", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Text(introHeading, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         }
                         Text(
-                            "Read the guide in order, or scroll to the feature you need. Use real measurements and verify important results before making decisions.",
+                            introBody,
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Row(
@@ -250,7 +266,7 @@ fun HowToUseKhetrovaScreen(
                     color = MaterialTheme.colorScheme.surfaceVariant
                 ) {
                     Text(
-                        "Translation note: this guide uses on-device machine translation where available. It is for product guidance only, not legal, survey, engineering, tax, or financial advice. Verify critical terms and measurements independently.",
+                        footerNote,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(14.dp)
                     )
