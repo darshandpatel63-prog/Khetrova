@@ -16,6 +16,13 @@ Khetrova is an Android toolkit for land measurement and unit conversion, irregul
 
 4. Find the debug APK at `app/build/outputs/apk/debug/app-debug.apk`.
 
+## Market-price data coverage
+
+- The market-price screen reads daily min/max/modal price records from the Government of India Open Government Data (OGD) / AGMARKNET feed when the API is reachable and a returned record matches a configured Indian market.
+- Each displayed quote shows the source and the market's reported date. Daily price records are not tick-by-tick exchange quotes, and arrival volumes or day-to-day change are not claimed unless a source supplies them.
+- Currency conversion rates are a separate feed and do not count as evidence that a crop price is live.
+- International market profiles are currently labels/placeholders for future integrations, not live price feeds. Their seeded example prices are no longer displayed as current market quotes. Proper global coverage requires separate verified market data sources (some require provider API keys or licensing).
+
 ## Release signing
 
 The release build uses environment variables so signing credentials do not need to be stored in the repository:
