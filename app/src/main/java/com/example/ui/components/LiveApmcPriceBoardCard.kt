@@ -536,7 +536,7 @@ private fun LiveCropQuoteRowCard(
                     )
                     Text(
                         text = "Source: ${quote.governmentSourceLabel} • Market date: ${quote.updatedTimestampText} • " +
-                            if (quote.isLiveNetworkSynced) "Recent official record" else "Older official record",
+                            (if (quote.isLiveNetworkSynced) "Recent official record" else "Older official record"),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
