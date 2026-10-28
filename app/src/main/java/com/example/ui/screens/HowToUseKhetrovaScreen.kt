@@ -40,7 +40,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.domain.AppLanguage
-import com.example.ui.components.AdMobNativeAdCard
+import com.example.ui.components.KhetrovaManualNativeAdSlot
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.nl.translate.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -61,8 +61,8 @@ private sealed class ManualListRow {
     data class Content(val index: Int, val paragraph: ManualParagraph) : ManualListRow() {
         override val key: String = "manual-content-$index"
     }
-    data class Ad(val slot: Int) : ManualListRow() {
-        override val key: String = "manual-ad-$slot"
+    data class Ad(val index: Int) : ManualListRow() {
+        override val key: String = "manual-ad-$index"
     }
 }
 
@@ -117,7 +117,7 @@ fun HowToUseKhetrovaScreen(
         buildList<ManualListRow> {
             displayedParagraphs.forEachIndexed { index, paragraph ->
                 add(ManualListRow.Content(index, paragraph))
-                add(ManualListRow.Ad(100 + index))
+                add(ManualListRow.Ad(index))
             }
         }
     }
@@ -242,7 +242,7 @@ fun HowToUseKhetrovaScreen(
             }
 
             item {
-                AdMobNativeAdCard(slotIndex = 99)
+                KhetrovaManualNativeAdSlot()
             }
 
             itemsIndexed(rows, key = { _, row -> row.key }) { _, row ->
@@ -266,7 +266,7 @@ fun HowToUseKhetrovaScreen(
                             Text(row.paragraph.body, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
-                    is ManualListRow.Ad -> AdMobNativeAdCard(slotIndex = row.slot)
+                    is ManualListRow.Ad -> KhetrovaManualNativeAdSlot()
                 }
             }
 
@@ -285,7 +285,7 @@ fun HowToUseKhetrovaScreen(
             }
 
             item {
-                AdMobNativeAdCard(slotIndex = 199)
+                KhetrovaManualNativeAdSlot()
             }
         }
     }
