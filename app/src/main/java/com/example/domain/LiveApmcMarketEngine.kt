@@ -80,7 +80,9 @@ data class LiveCropPriceQuote(
     val nativeModalPrice: Double,
     val governmentSourceLabel: String,
     val updatedTimestampText: String,
-    val isLiveNetworkSynced: Boolean
+    val isLiveNetworkSynced: Boolean,
+    val hasVerifiedDailyChange: Boolean = false,
+    val hasVerifiedArrivalData: Boolean = false
 )
 
 data class LiveApmcSyncSnapshot(
@@ -641,154 +643,102 @@ object LiveApmcMarketEngine {
      * Generates an immediate offline-ready snapshot calibrated to today's date so the UI
      * renders instantaneously on opening, even before the background HTTP sync completes.
      */
+    /**
+     * Starts empty until an official price record is fetched. Seed templates are not market quotes
+     * and must never be presented as live prices.
+     */
     fun getInstantCalibratedSnapshot(): LiveApmcSyncSnapshot {
-        val dateStr = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.US).format(Date())
-        val daySeed = getTodayDaySeed()
-        val quotes = buildQuotesForAllYards(
-            daySeed = daySeed,
-            livePulseFactor = 1.0,
-            usdToInr = 86.40,
-            eurToInr = 93.80,
-            brlToInr = 15.10,
-            jpyToInr = 0.575,
-            audToInr = 55.20,
-            aedToInr = 23.52,
-            agmarknetOverrides = emptyMap(),
-            updatedTimestampText = dateStr,
-            isLiveNetworkSynced = false
-        )
         return LiveApmcSyncSnapshot(
-            quotes = quotes,
+            quotes = emptyList(),
             isOnlineSynced = false,
-            syncStatusBanner = "Daily Calibrated APMC & Global Govt Rates Active • Auto-Syncing Live Feed...",
-            lastUpdatedTimeFormatted = dateStr,
-            usdToInrRate = 86.40,
-            eurToInrRate = 93.80,
-            brlToInrRate = 15.10,
-            jpyToInrRate = 0.575,
-            audToInrRate = 55.20
+            syncStatusBanner = "NOT SYNCED • Tap Sync Live to fetch official daily India APMC records. Unsupported country feeds are not shown as live.",
+            lastUpdatedTimeFormatted = "Not synced",
+            usdToInrRate = 0.0,
+            eurToInrRate = 0.0,
+            brlToInrRate = 0.0,
+            jpyToInrRate = 0.0,
+            audToInrRate = 0.0
         )
     }
 
     /**
-     * Performs a real network sync on Dispatchers.IO:
-     * 1. Queries live currency & global commodity exchange pulse from Open Exchange Rates API
-     *    (`https://open.er-api.com/v6/latest/USD`) — zero API key required, 100% free.
-     * 2. Attempts to fetch public India Agmarknet / e-NAM commodity records if reachable.
-     * 3. Computes region-wise & yard-wise daily auction prices (both ₹/20Kg Man and ₹/100Kg Quintal,
-     *    plus native currency units for USA, Brazil, Europe, Japan, Australia, and UAE).
+     * Fetches actual daily Agmarknet records from India's Open Government Data API.
+     * Currency exchange rates are retrieved separately and never used to invent crop prices.
+     * This is a daily market-price source, not tick-by-tick trading data.
      */
     suspend fun fetchAndSyncLiveApmcRates(): LiveApmcSyncSnapshot = withContext(Dispatchers.IO) {
-        var usdToInr = 86.40
-        var eurToInr = 93.80
-        var brlToInr = 15.10
-        var jpyToInr = 0.575
-        var audToInr = 55.20
-        var aedToInr = 23.52
-        var isOnlineSuccess = false
-        var livePulseFactor = 1.0
+        var usdToInr = 0.0
+        var eurToInr = 0.0
+        var brlToInr = 0.0
+        var jpyToInr = 0.0
+        var audToInr = 0.0
+        var aedToInr = 0.0
+        var fxSynced = false
 
         try {
-            val url = URL("https://open.er-api.com/v6/latest/USD")
-            val connection = (url.openConnection() as HttpURLConnection).apply {
+            val connection = (URL("https://open.er-api.com/v6/latest/USD").openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
-                connectTimeout = 4500
-                readTimeout = 4500
+                connectTimeout = 5000
+                readTimeout = 5000
                 setRequestProperty("Accept", "application/json")
             }
-            if (connection.responseCode == 200) {
-                val body = connection.inputStream.bufferedReader().use { it.readText() }
-                val json = JSONObject(body)
-                val rates = json.optJSONObject("rates")
-                if (rates != null) {
-                    val inr = rates.optDouble("INR", 86.40)
-                    val eur = rates.optDouble("EUR", 0.92)
-                    val brl = rates.optDouble("BRL", 5.72)
-                    val jpy = rates.optDouble("JPY", 150.2)
-                    val aud = rates.optDouble("AUD", 1.56)
-                    val aed = rates.optDouble("AED", 3.6725)
-
-                    if (inr > 50.0) {
-                        usdToInr = inr
-                        eurToInr = if (eur > 0.1) inr / eur else 93.80
-                        brlToInr = if (brl > 0.1) inr / brl else 15.10
-                        jpyToInr = if (jpy > 1.0) inr / jpy else 0.575
-                        audToInr = if (aud > 0.1) inr / aud else 55.20
-                        aedToInr = if (aed > 0.1) inr / aed else 23.52
-                        // Derive a micro market pulse factor from live FX fractional movement
-                        val fractional = (inr * 100.0).roundToInt() % 17
-                        livePulseFactor = 1.0 + ((fractional - 8) * 0.0022)
-                        isOnlineSuccess = true
-                    }
-                }
-            }
-            connection.disconnect()
-        } catch (_: Exception) {
-            // Gracefully fall back to daily calibrated rates when offline
-        }
-
-        // Optional check against public Agmarknet / data.gov.in sample resource if online
-        val agmarknetOverrides = mutableMapOf<String, Double>()
-        if (isOnlineSuccess) {
             try {
-                // Public sample key from data.gov.in documentation for Agmarknet daily mandi prices
-                val agUrl = URL(
-                    "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=25"
-                )
-                val agConn = (agUrl.openConnection() as HttpURLConnection).apply {
-                    requestMethod = "GET"
-                    connectTimeout = 3500
-                    readTimeout = 3500
-                }
-                if (agConn.responseCode == 200) {
-                    val text = agConn.inputStream.bufferedReader().use { it.readText() }
-                    val root = JSONObject(text)
-                    val records = root.optJSONArray("records")
-                    if (records != null) {
-                        for (i in 0 until records.length()) {
-                            val rec = records.optJSONObject(i) ?: continue
-                            val commodity = rec.optString("commodity", "").lowercase(Locale.US)
-                            val modalQuintal = rec.optString("modal_price", "").toDoubleOrNull()
-                            if (commodity.isNotBlank() && modalQuintal != null && modalQuintal > 100.0) {
-                                // Convert Quintal (100 Kg) to 20 Kg Man
-                                agmarknetOverrides[commodity] = modalQuintal / 5.0
-                            }
+                if (connection.responseCode == 200) {
+                    val json = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+                    val rates = json.optJSONObject("rates")
+                    if (rates != null) {
+                        val inr = rates.optDouble("INR", 0.0)
+                        val eur = rates.optDouble("EUR", 0.0)
+                        val brl = rates.optDouble("BRL", 0.0)
+                        val jpy = rates.optDouble("JPY", 0.0)
+                        val aud = rates.optDouble("AUD", 0.0)
+                        val aed = rates.optDouble("AED", 0.0)
+                        if (inr > 50.0 && eur > 0.0 && brl > 0.0 && jpy > 0.0 && aud > 0.0 && aed > 0.0) {
+                            usdToInr = inr
+                            eurToInr = inr / eur
+                            brlToInr = inr / brl
+                            jpyToInr = inr / jpy
+                            audToInr = inr / aud
+                            aedToInr = inr / aed
+                            fxSynced = true
                         }
                     }
                 }
-                agConn.disconnect()
-            } catch (_: Exception) {
-                // Ignore if rate-limited; our calibrated regional auction database handles all yards
+            } finally {
+                connection.disconnect()
+            }
+        } catch (_: Exception) {
+            // FX is optional and must not affect whether a crop price is considered live.
+        }
+
+        // The Gujarat query prioritizes the local APMCs this app lists; the general query adds
+        // other Indian market records. Both are official daily records from data.gov.in.
+        val rowsByKey = LinkedHashMap<String, JSONObject>()
+        listOf("Gujarat", null).forEach { stateFilter ->
+            fetchAgmarknetRecords(stateFilter).forEach { row ->
+                val key = listOf("state", "district", "market", "commodity", "variety", "grade", "arrival_date")
+                    .joinToString("|") { row.optString(it, "").trim().lowercase(Locale.US) }
+                rowsByKey[key] = row
             }
         }
 
+        val quotes = rowsByKey.values.mapNotNull { row -> row.toVerifiedApmcQuote() }
+            .distinctBy { it.quoteId }
+            .sortedWith(compareBy<LiveCropPriceQuote>({ it.regionZone.ordinal }, { it.yardName }, { it.cropNameEn }))
+
+        val recentCount = quotes.count { it.isLiveNetworkSynced }
         val nowFormatted = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.US).format(Date())
-        val daySeed = getTodayDaySeed()
-
-        val quotes = buildQuotesForAllYards(
-            daySeed = daySeed,
-            livePulseFactor = livePulseFactor,
-            usdToInr = usdToInr,
-            eurToInr = eurToInr,
-            brlToInr = brlToInr,
-            jpyToInr = jpyToInr,
-            audToInr = audToInr,
-            aedToInr = aedToInr,
-            agmarknetOverrides = agmarknetOverrides,
-            updatedTimestampText = nowFormatted,
-            isLiveNetworkSynced = isOnlineSuccess
-        )
-
-        val statusBanner = if (isOnlineSuccess) {
-            "LIVE AUTO-SYNCED • India APMC (Agmarknet/e-NAM) + Global Govt Feeds (1 USD = ₹${String.format(Locale.US, "%.2f", usdToInr)})"
-        } else {
-            "OFFLINE DAILY CALIBRATED MODE • Region-Wise APMC & Global Govt Rates ($nowFormatted)"
+        val status = when {
+            recentCount > 0 -> "OFFICIAL AGMARKNET DATA • ${recentCount} recent price records • Market date and source shown on each quote. India daily feed only."
+            quotes.isNotEmpty() -> "OFFICIAL AGMARKNET DATA LOADED • All returned records are dated; check each market date before using a rate."
+            fxSynced -> "CURRENCY RATES SYNCED, BUT NO VERIFIED CROP PRICES RETURNED • Exchange rates are not crop prices. Retry the India APMC feed."
+            else -> "NO VERIFIED CROP PRICES RECEIVED • Check internet/API availability and tap Sync Live again. Unavailable country feeds are not replaced with sample prices."
         }
 
         LiveApmcSyncSnapshot(
             quotes = quotes,
-            isOnlineSynced = isOnlineSuccess,
-            syncStatusBanner = statusBanner,
+            isOnlineSynced = recentCount > 0,
+            syncStatusBanner = status,
             lastUpdatedTimeFormatted = nowFormatted,
             usdToInrRate = usdToInr,
             eurToInrRate = eurToInr,
@@ -796,6 +746,146 @@ object LiveApmcMarketEngine {
             jpyToInrRate = jpyToInr,
             audToInrRate = audToInr
         )
+    }
+
+    private fun fetchAgmarknetRecords(stateFilter: String?): List<JSONObject> {
+        return try {
+            val encodedFilter = stateFilter?.let { "&filters%5Bstate%5D=${it.replace(" ", "%20")}" }.orEmpty()
+            val endpoint =
+                "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070" +
+                    "?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b" +
+                    "&format=json&limit=1000&offset=0$encodedFilter"
+            val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = 7000
+                readTimeout = 7000
+                setRequestProperty("Accept", "application/json")
+                setRequestProperty("User-Agent", "Khetrova-Android/1.0")
+            }
+            try {
+                if (connection.responseCode != 200) return emptyList()
+                val root = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+                val records = root.optJSONArray("records") ?: return emptyList()
+                (0 until records.length()).mapNotNull { records.optJSONObject(it) }
+            } finally {
+                connection.disconnect()
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun JSONObject.toVerifiedApmcQuote(): LiveCropPriceQuote? {
+        val state = optString("state", "").trim()
+        val district = optString("district", "").trim()
+        val market = optString("market", "").trim()
+        val commodity = optString("commodity", "").trim()
+        val variety = optString("variety", "").trim()
+        val grade = optString("grade", "").trim()
+        val marketDate = optString("arrival_date", "").trim()
+        val minPrice = optString("min_price", "").trim().toDoubleOrNull() ?: return null
+        val maxPrice = optString("max_price", "").trim().toDoubleOrNull() ?: return null
+        val modalPrice = optString("modal_price", "").trim().toDoubleOrNull() ?: return null
+
+        if (state.isBlank() || district.isBlank() || market.isBlank() || commodity.isBlank() ||
+            marketDate.isBlank() || minPrice <= 0.0 || modalPrice <= 0.0 || maxPrice <= 0.0 ||
+            minPrice > modalPrice || modalPrice > maxPrice
+        ) return null
+
+        val yardId = findConfiguredIndianYardId(state, district, market) ?: return null
+        val yard = allYardProfiles.firstOrNull { it.yardId == yardId } ?: return null
+        val safeMarket = market.lowercase(Locale.US).replace(Regex("[^a-z0-9]+"), "_").trim('_')
+        val safeCommodity = commodity.lowercase(Locale.US).replace(Regex("[^a-z0-9]+"), "_").trim('_')
+        val gradeLabel = listOf(variety, grade).filter { it.isNotBlank() && !it.equals("NA", true) }.joinToString(" / ")
+            .ifBlank { "As reported by market" }
+
+        // The official feed reports INR per quintal (100 kg). One 20 kg man is one fifth of that.
+        return LiveCropPriceQuote(
+            quoteId = "${yard.yardId}_${safeMarket}_${safeCommodity}_${marketDate.replace("/", "-")}",
+            yardId = yard.yardId,
+            yardName = market,
+            districtOrState = "$district, $state",
+            regionZone = yard.regionZone,
+            cropNameEn = commodity,
+            cropNameLocal = commodity,
+            varietyOrGrade = gradeLabel,
+            minPricePer20KgManInr = minPrice / 5.0,
+            maxPricePer20KgManInr = maxPrice / 5.0,
+            modalPricePer20KgManInr = modalPrice / 5.0,
+            minPricePerQuintalInr = minPrice,
+            maxPricePerQuintalInr = maxPrice,
+            modalPricePerQuintalInr = modalPrice,
+            dailyChangePerManInr = 0.0,
+            arrivalBagsCount = 0,
+            nativeCurrencySymbol = "₹",
+            nativeUnitLabel = "INR / Quintal (100 Kg)",
+            nativeModalPrice = modalPrice,
+            governmentSourceLabel = "Government of India OGD / Agmarknet daily market-price record",
+            updatedTimestampText = marketDate,
+            isLiveNetworkSynced = isRecentMarketDate(marketDate),
+            hasVerifiedDailyChange = false,
+            hasVerifiedArrivalData = false
+        )
+    }
+
+    private fun findConfiguredIndianYardId(state: String, district: String, market: String): String? {
+        val stateKey = state.lowercase(Locale.US)
+        val place = "$market $district".lowercase(Locale.US)
+        return when {
+            stateKey.contains("gujarat") -> when {
+                "gondal" in place -> "gondal_apmc"
+                "rajkot" in place || "bedi" in place -> "rajkot_bedi_apmc"
+                "junagadh" in place -> "junagadh_apmc"
+                "mahuva" in place || "bhavnagar" in place -> "mahuva_bhavnagar_apmc"
+                "amreli" in place || "botad" in place -> "amreli_botad_apmc"
+                "jamnagar" in place || "hapa" in place -> "jamnagar_hapa_apmc"
+                "unjha" in place -> "unjha_apmc"
+                "deesa" in place || "palanpur" in place -> "deesa_palanpur_apmc"
+                "patan" in place || "harij" in place -> "patan_harij_apmc"
+                "himatnagar" in place || "modasa" in place -> "himatnagar_modasa_apmc"
+                "mehsana" in place || "vijapur" in place -> "mehsana_vijapur_apmc"
+                "ahmedabad" in place || "bavla" in place || "jetalpur" in place -> "ahmedabad_bavla_apmc"
+                "anand" in place || "nadiad" in place || "kapadvanj" in place -> "anand_kapadvanj_apmc"
+                "surat" in place || "bharuch" in place -> "surat_bharuch_apmc"
+                "bhuj" in place || "anjar" in place || "kutch" in place -> "bhuj_anjar_kutch_apmc"
+                else -> null
+            }
+            stateKey.contains("maharashtra") -> if ("lasalgaon" in place || "pune" in place || "nashik" in place) "lasalgaon_nashik_mh" else null
+            stateKey.contains("madhya") -> if ("neemuch" in place || "indore" in place) "neemuch_indore_mp" else null
+            stateKey.contains("rajasthan") -> if ("kota" in place || "jodhpur" in place) "kota_jodhpur_rj" else null
+            stateKey.contains("punjab") || stateKey.contains("haryana") ->
+                if ("khanna" in place || "karnal" in place) "khanna_karnal_pb_hr" else null
+            stateKey.contains("andhra") || stateKey.contains("kerala") || stateKey.contains("tamil") ->
+                if ("guntur" in place || "kochi" in place || "erode" in place) "guntur_kochi_south_in" else null
+            else -> null
+        }
+    }
+
+    private fun isRecentMarketDate(dateText: String): Boolean {
+        val patterns = listOf("dd/MM/yyyy", "yyyy-MM-dd", "dd-MM-yyyy", "dd MMM yyyy", "d/M/yyyy")
+        val parsed = patterns.firstNotNullOfOrNull { pattern ->
+            try {
+                SimpleDateFormat(pattern, Locale.US).apply { isLenient = false }.parse(dateText)
+            } catch (_: Exception) {
+                null
+            }
+        } ?: return false
+
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val marketDay = Calendar.getInstance().apply {
+            time = parsed
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val daysOld = (today - marketDay) / (24L * 60L * 60L * 1000L)
+        return daysOld in 0..2
     }
 
     private fun getTodayDaySeed(): Int {
