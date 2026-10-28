@@ -45,94 +45,11 @@ data class GeodesicPolygonSurveyResult(
     val equivalentFourSidesFt: List<Double> // [North, East, South, West, Diagonal] for CAD transfer
 )
 
-data class GlobalLocationPreset(
-    val name: String,
-    val countryProfileName: String,
-    val centerLat: Double,
-    val centerLng: Double,
-    val defaultPolygon: List<GpsLatLng>
-)
-
 object GeodesicMapAnd3DEngine {
 
     private const val EARTH_RADIUS_METERS = 6378137.0
     private const val FEET_PER_METER = 3.280839895
     private const val SQ_FEET_PER_SQ_METER = 10.7639104167
-
-    val globalLocationPresets: List<GlobalLocationPreset> = listOf(
-        GlobalLocationPreset(
-            name = "Gujarat Agricultural Parcel (Rajkot / Saurashtra)",
-            countryProfileName = "Gujarat (Saurashtra / Central - 16 Guntha)",
-            centerLat = 22.2916,
-            centerLng = 70.7932,
-            defaultPolygon = listOf(
-                GpsLatLng(22.29210, 70.79270, "P1 (NW)"),
-                GpsLatLng(22.29215, 70.79365, "P2 (NE)"),
-                GpsLatLng(22.29120, 70.79375, "P3 (SE)"),
-                GpsLatLng(22.29115, 70.79265, "P4 (SW)")
-            )
-        ),
-        GlobalLocationPreset(
-            name = "Surat / Ahmedabad TP Scheme Corner Plot",
-            countryProfileName = "Gujarat (Saurashtra / Central - 16 Guntha)",
-            centerLat = 21.1702,
-            centerLng = 72.8311,
-            defaultPolygon = listOf(
-                GpsLatLng(21.17045, 72.83085, "P1 (NW)"),
-                GpsLatLng(21.17048, 72.83135, "P2 (NE)"),
-                GpsLatLng(21.17002, 72.83142, "P3 (SE)"),
-                GpsLatLng(21.16998, 72.83080, "P4 (SW)")
-            )
-        ),
-        GlobalLocationPreset(
-            name = "Tokyo Urban Tsubo Parcel (Japan 日本)",
-            countryProfileName = "Japan (日本 - Tsubo / Tatami / Tan / Cho)",
-            centerLat = 35.6812,
-            centerLng = 139.7671,
-            defaultPolygon = listOf(
-                GpsLatLng(35.68145, 139.76685, "P1"),
-                GpsLatLng(35.68148, 139.76735, "P2"),
-                GpsLatLng(35.68105, 139.76740, "P3"),
-                GpsLatLng(35.68100, 139.76680, "P4")
-            )
-        ),
-        GlobalLocationPreset(
-            name = "Texas / Midwest Ranch Acreage (USA / UK)",
-            countryProfileName = "USA, UK, Canada & Australia (Acre / Rood / Perch)",
-            centerLat = 30.2672,
-            centerLng = -97.7431,
-            defaultPolygon = listOf(
-                GpsLatLng(30.26780, -97.74380, "P1"),
-                GpsLatLng(30.26785, -97.74240, "P2"),
-                GpsLatLng(30.26660, -97.74235, "P3"),
-                GpsLatLng(30.26655, -97.74385, "P4")
-            )
-        ),
-        GlobalLocationPreset(
-            name = "Bangkok Rai-Ngan-Wa Estate (Thailand)",
-            countryProfileName = "Thailand (ประเทศไทย - Rai / Ngan / Tarang Wa)",
-            centerLat = 13.7563,
-            centerLng = 100.5018,
-            defaultPolygon = listOf(
-                GpsLatLng(13.75670, 100.50140, "P1"),
-                GpsLatLng(13.75675, 100.50220, "P2"),
-                GpsLatLng(13.75595, 100.50225, "P3"),
-                GpsLatLng(13.75590, 100.50135, "P4")
-            )
-        ),
-        GlobalLocationPreset(
-            name = "Dubai / Cairo Dunam & Feddan Parcel (Middle East)",
-            countryProfileName = "Middle East, Turkey & Egypt (Feddan / Dunam / Qirat)",
-            centerLat = 25.2048,
-            centerLng = 55.2708,
-            defaultPolygon = listOf(
-                GpsLatLng(25.20525, 55.27035, "P1"),
-                GpsLatLng(25.20530, 55.27125, "P2"),
-                GpsLatLng(25.20445, 55.27130, "P3"),
-                GpsLatLng(25.20440, 55.27030, "P4")
-            )
-        )
-    )
 
     /**
      * Parses a Google Maps URL (e.g. https://www.google.com/maps/@22.2916,70.7932,18z or ?q=22.2916,70.7932)
@@ -167,24 +84,6 @@ object GeodesicMapAnd3DEngine {
     /**
      * Builds a 4-corner parcel around a center Lat/Lng with given width & height in meters.
      */
-    fun createParcelAroundCenter(
-        centerLat: Double,
-        centerLng: Double,
-        widthMeters: Double = 75.0,
-        heightMeters: Double = 60.0
-    ): List<GpsLatLng> {
-        val dLat = (heightMeters / 2.0) / EARTH_RADIUS_METERS * (180.0 / PI)
-        val cosLat = cos(centerLat * PI / 180.0).coerceAtLeast(0.01)
-        val dLng = (widthMeters / 2.0) / (EARTH_RADIUS_METERS * cosLat) * (180.0 / PI)
-
-        return listOf(
-            GpsLatLng(centerLat + dLat, centerLng - dLng * 0.92, "P1 (NW)"),
-            GpsLatLng(centerLat + dLat * 1.04, centerLng + dLng, "P2 (NE)"),
-            GpsLatLng(centerLat - dLat, centerLng + dLng * 1.08, "P3 (SE)"),
-            GpsLatLng(centerLat - dLat * 0.96, centerLng - dLng, "P4 (SW)")
-        )
-    }
-
     fun haversineDistanceMeters(p1: GpsLatLng, p2: GpsLatLng): Double {
         val lat1 = p1.lat * PI / 180.0
         val lat2 = p2.lat * PI / 180.0
@@ -218,7 +117,7 @@ object GeodesicMapAnd3DEngine {
         stateProfile: StateLandProfile
     ): GeodesicPolygonSurveyResult {
         if (points.size < 3) {
-            val emptyCentroid = points.firstOrNull() ?: GpsLatLng(22.2916, 70.7932)
+            val emptyCentroid = points.firstOrNull() ?: GpsLatLng(0.0, 0.0, "No location selected")
             return GeodesicPolygonSurveyResult(
                 points = points,
                 localPoints = emptyList(),
@@ -229,7 +128,7 @@ object GeodesicMapAnd3DEngine {
                 perimeterFeet = 0.0,
                 centroid = emptyCentroid,
                 countryConversions = emptyList(),
-                equivalentFourSidesFt = listOf(50.0, 40.0, 50.0, 40.0, 64.0)
+                equivalentFourSidesFt = emptyList()
             )
         }
 
