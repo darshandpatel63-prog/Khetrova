@@ -18,7 +18,6 @@ import com.example.domain.DailyMandiBillResult
 import com.example.domain.FarmerAndLandToolsEngine
 import com.example.domain.GeodesicMapAnd3DEngine
 import com.example.domain.GeodesicPolygonSurveyResult
-import com.example.domain.GlobalLocationPreset
 import com.example.domain.GpsLatLng
 import com.example.domain.IrregularPlotResult
 import com.example.domain.LandAndConstructionEngine
@@ -172,12 +171,14 @@ class MainViewModel(
     private val _landConversionResult = MutableStateFlow(computeCurrentLandConversion())
     val landConversionResult: StateFlow<LandConversionResult> = _landConversionResult.asStateFlow()
 
-    // --- Tab 2: In-App Satellite Map + Trading-Style Multi-Line Cutout + 3D Parcel Viewer ---
-    private val defaultPreset = GeodesicMapAnd3DEngine.globalLocationPresets.first()
-    private val _mapPolygonPoints = MutableStateFlow(defaultPreset.defaultPolygon)
+    // --- Tab 2: User-entered location and user-drawn land survey (no preloaded demo parcel) ---
+    private val _mapDisplayCenter = MutableStateFlow<GpsLatLng?>(null)
+    val mapDisplayCenter: StateFlow<GpsLatLng?> = _mapDisplayCenter.asStateFlow()
+
+    private val _mapPolygonPoints = MutableStateFlow<List<GpsLatLng>>(emptyList())
     val mapPolygonPoints: StateFlow<List<GpsLatLng>> = _mapPolygonPoints.asStateFlow()
 
-    private val _googleMapsInputText = MutableStateFlow("${defaultPreset.centerLat}, ${defaultPreset.centerLng}")
+    private val _googleMapsInputText = MutableStateFlow("")
     val googleMapsInputText: StateFlow<String> = _googleMapsInputText.asStateFlow()
 
     private val _mapPolygonSurveyResult = MutableStateFlow(computeCurrentMapSurvey())
@@ -812,21 +813,6 @@ class MainViewModel(
         )
     }
 
-    fun applyGlobalMapPreset(preset: GlobalLocationPreset) {
-        _googleMapsInputText.value = "${preset.centerLat}, ${preset.centerLng}"
-        _mapPolygonPoints.value = preset.defaultPolygon
-        val matchingProfile = LandAndConstructionEngine.stateProfiles.find {
-            it.stateName == preset.countryProfileName
-        }
-        if (matchingProfile != null) {
-            _selectedStateProfile.value = matchingProfile
-            _selectedInputUnit.value = matchingProfile.units.first()
-            _landConversionResult.value = computeCurrentLandConversion()
-        }
-        _mapPolygonSurveyResult.value = computeCurrentMapSurvey()
-        _statusBannerMessage.value = "Loaded Map & 3D Cutout at ${preset.name}"
-    }
-
     fun onGoogleMapsInputChange(text: String) {
         _googleMapsInputText.value = text
     }
@@ -834,21 +820,21 @@ class MainViewModel(
     fun jumpToGoogleMapsCoordinates() {
         val parsed = GeodesicMapAnd3DEngine.parseGoogleMapsInput(_googleMapsInputText.value)
         if (parsed != null) {
-            _mapPolygonPoints.value = GeodesicMapAnd3DEngine.createParcelAroundCenter(
-                centerLat = parsed.lat,
-                centerLng = parsed.lng,
-                widthMeters = 70.0,
-                heightMeters = 55.0
-            )
+            // Center the map only. Do not generate a pretend boundary or area around this point.
+            _mapDisplayCenter.value = parsed.copy(label = "Map center")
+            _mapPolygonPoints.value = emptyList()
             _mapPolygonSurveyResult.value = computeCurrentMapSurvey()
-            _statusBannerMessage.value = "Centered at GPS (${String.format("%.5f", parsed.lat)}, ${String.format("%.5f", parsed.lng)}) • Draw or drag lines on map!"
+            _statusBannerMessage.value = "Map centered at entered coordinates. Tap actual boundary corners to begin measuring."
         } else {
-            _statusBannerMessage.value = "Paste valid Latitude, Longitude (e.g. 22.2916, 70.7932) or a Google Maps @lat,lng link"
+            _statusBannerMessage.value = "Enter valid latitude, longitude or a Google Maps link before opening the map."
         }
     }
 
     fun addMapPolygonPoint(lat: Double, lng: Double) {
         val current = _mapPolygonPoints.value
+        if (current.isEmpty() && _mapDisplayCenter.value == null) {
+            _mapDisplayCenter.value = GpsLatLng(lat, lng, "Map center")
+        }
         val nextIndex = current.size + 1
         val label = "P$nextIndex"
         _mapPolygonPoints.value = current + GpsLatLng(
@@ -870,14 +856,15 @@ class MainViewModel(
     }
 
     fun startSinglePointLineDrawingMode() {
-        val parsed = GeodesicMapAnd3DEngine.parseGoogleMapsInput(_googleMapsInputText.value)
-        val cLat = parsed?.lat ?: _mapPolygonSurveyResult.value.centroid.lat
-        val cLng = parsed?.lng ?: _mapPolygonSurveyResult.value.centroid.lng
-        _mapPolygonPoints.value = listOf(
-            GpsLatLng(lat = cLat, lng = cLng, label = "P1 (Start)")
-        )
+        val point = GeodesicMapAnd3DEngine.parseGoogleMapsInput(_googleMapsInputText.value) ?: _mapDisplayCenter.value
+        if (point == null) {
+            _statusBannerMessage.value = "Enter coordinates and open the map first, or tap a location on the map to begin."
+            return
+        }
+        _mapDisplayCenter.value = point
+        _mapPolygonPoints.value = listOf(point.copy(label = "P1"))
         _mapPolygonSurveyResult.value = computeCurrentMapSurvey()
-        _statusBannerMessage.value = "Started from 1 Geo-Point (P1). Now tap on the Map/Chart to draw lines L1, L2, L3, L4!"
+        _statusBannerMessage.value = "Started at the chosen first point. Tap the real boundary corners to continue measuring."
     }
 
     fun undoLastMapPoint() {
@@ -890,16 +877,10 @@ class MainViewModel(
 
     fun resetDefaultFourCornerMapCut() {
         val parsed = GeodesicMapAnd3DEngine.parseGoogleMapsInput(_googleMapsInputText.value)
-        val cLat = parsed?.lat ?: _mapPolygonSurveyResult.value.centroid.lat
-        val cLng = parsed?.lng ?: _mapPolygonSurveyResult.value.centroid.lng
-        _mapPolygonPoints.value = GeodesicMapAnd3DEngine.createParcelAroundCenter(
-            centerLat = cLat,
-            centerLng = cLng,
-            widthMeters = 70.0,
-            heightMeters = 55.0
-        )
+        if (parsed != null) _mapDisplayCenter.value = parsed.copy(label = "Map center")
+        _mapPolygonPoints.value = emptyList()
         _mapPolygonSurveyResult.value = computeCurrentMapSurvey()
-        _statusBannerMessage.value = "Reset 4-corner land cutout around current map center"
+        _statusBannerMessage.value = "Boundary points cleared. Enter/select a location and draw the actual plot boundary; no sample box was created."
     }
 
     fun transferMapCutToIrregularCadTab() {
