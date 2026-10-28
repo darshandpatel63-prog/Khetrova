@@ -23,6 +23,13 @@ Khetrova is an Android toolkit for land measurement and unit conversion, irregul
 - Currency conversion rates are a separate feed and do not count as evidence that a crop price is live.
 - International market profiles are currently labels/placeholders for future integrations, not live price feeds. Their seeded example prices are no longer displayed as current market quotes. Proper global coverage requires separate verified market data sources (some require provider API keys or licensing).
 
+## User manual and measurement inputs
+
+- Open **Menu • All Tools → How to Use Khetrova — Full Feature Manual** for the separate, step-by-step guide covering land units, map survey, CAD, BOQ, market data, farmer tools, Vault, and PDF export.
+- Map surveys no longer start with a preloaded sample parcel. Enter a real location and mark the actual boundary points before reviewing area or perimeter. The 2D Plot CAD screen no longer preloads sample side lengths; enter the measured sides. A land-value estimate is shown only after a rate per square foot is supplied.
+- The manual uses Google ML Kit on-device translation for its supported languages. The app's language list contains more languages than ML Kit supports; unsupported target languages fall back to English. The first translation for a supported language downloads a language model, which may use mobile data. Machine translation can be imperfect.
+- The current `AdMobNativeAdCard` composable is a labelled test/demo creative, not a real Google Mobile Ads native-ad request. Native ad slots are placed after manual sections, but production ad serving requires the Mobile Ads SDK and the app's own configured production ad-unit IDs. Do not treat the demo creatives as live ads.
+
 ## Release signing
 
 The release build uses environment variables so signing credentials do not need to be stored in the repository:
