@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.AppLanguage
 import com.example.ui.components.KhetrovaManualNativeAdSlot
 import com.google.android.gms.tasks.Task
-import com.google.mlkit.nl.translate.DownloadConditions
+import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
