@@ -108,6 +108,7 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
     val mapDisplayCenter by viewModel.mapDisplayCenter.collectAsStateWithLifecycle()
     val googleMapsQuery by viewModel.googleMapsInputText.collectAsStateWithLifecycle()
     val uiStrings by viewModel.uiStrings.collectAsStateWithLifecycle()
+    var boundaryCoordinatesText by remember { mutableStateOf("") }
 
     // 3D Rotation & Extrusion interactive controls
     var yawDegrees by remember { mutableFloatStateOf(32f) }
@@ -351,6 +352,52 @@ fun MapAnd3DCutoutScreen(viewModel: MainViewModel) {
                                 color = Color(0xFFD1FAE5),
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "Enter boundary GPS points directly (one latitude, longitude pair per line)",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = CadPolygonStroke
+                        )
+                        OutlinedTextField(
+                            value = boundaryCoordinatesText,
+                            onValueChange = { boundaryCoordinatesText = it },
+                            label = { Text("Lat, Lng — one point per line") },
+                            placeholder = { Text("22.1080685, 71.7693784\n22.1081580, 71.7694253\n22.1080365, 71.7694528\n22.1081263, 71.7694964") },
+                            minLines = 3,
+                            maxLines = 5,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("input_boundary_coordinates")
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Button(
+                            onClick = {
+                                val parsedPoints = boundaryCoordinatesText
+                                    .lines()
+                                    .mapNotNull { line ->
+                                        val values = line.trim()
+                                            .replace("(", "")
+                                            .replace(")", "")
+                                            .split(Regex("[,;\\s]+"))
+                                            .filter { it.isNotBlank() }
+                                        if (values.size < 2) null else {
+                                            val lat = values[0].toDoubleOrNull()
+                                            val lng = values[1].toDoubleOrNull()
+                                            if (lat == null || lng == null) null else lat to lng
+                                        }
+                                    }
+                                viewModel.setMapPolygonPointsFromCoordinates(parsedPoints)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("btn_load_boundary_coordinates")
+                        ) {
+                            Icon(Icons.Default.AddLocationAlt, contentDescription = "Load boundary coordinates")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Load boundary coordinates")
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
