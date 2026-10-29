@@ -28,7 +28,7 @@ android {
     !configuredStorePassword.isNullOrBlank() &&
       !configuredKeyPassword.isNullOrBlank() &&
       !configuredKeyAlias.isNullOrBlank() &&
-      java.io.File(configuredKeystorePath).isFile
+      file(configuredKeystorePath).isFile
 
   signingConfigs {
     if (usePermanentReleaseSigning) {
