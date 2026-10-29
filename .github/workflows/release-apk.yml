@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   build-release:
-    name: Build signed APK and publish GitHub Release
+    name: Build release-variant APK and publish GitHub Release
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -79,7 +79,8 @@ jobs:
             exit 1
           fi
 
-      - name: Build signed release APK (no cache or artifacts)
+      - name: Build release APK (no cache or artifacts)
+        id: apk_build
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -91,10 +92,27 @@ jobs:
           VERSION_NAME: ${{ steps.release_meta.outputs.APK_VERSION }}
         run: |
           set -euo pipefail
-          trap 'rm -f "$KEYSTORE_PATH"' EXIT
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
-          chmod 600 "$KEYSTORE_PATH"
-          test -s "$KEYSTORE_PATH"
+          keystore_path="$KEYSTORE_PATH"
+          trap 'if [ -n "${keystore_path:-}" ]; then rm -f "$keystore_path"; fi' EXIT
+
+          if [ -n "$KEYSTORE_BASE64" ] &&
+             [ -n "$STORE_PASSWORD" ] &&
+             [ -n "$KEY_ALIAS" ] &&
+             [ -n "$KEY_PASSWORD" ]; then
+            printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore_path"
+            chmod 600 "$keystore_path"
+            test -s "$keystore_path"
+            signing_note="Signed with the configured permanent release keystore."
+            apk_name="Khetrova-${VERSION_NAME}.apk"
+          else
+            rm -f "$keystore_path"
+            unset KEYSTORE_PATH STORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+            signing_note="DEBUG-SIGNED TEST APK. Not for Play Store/public distribution; if a later build has a different signing key, uninstall the older app before installing it."
+            apk_name="Khetrova-${VERSION_NAME}-debug-signed.apk"
+            echo "::notice::No complete release keystore secrets were supplied. Building a debug-signed release variant for phone testing only."
+          fi
+          echo "signing_note=$signing_note" >> "$GITHUB_OUTPUT"
+          echo "apk_file_name=$apk_name" >> "$GITHUB_OUTPUT"
 
           chmod +x ./gradlew
           ./gradlew --no-daemon --no-build-cache --rerun-tasks clean assembleRelease
@@ -106,12 +124,14 @@ jobs:
           fi
 
           mkdir -p release-upload
-          cp "$apk" "release-upload/Khetrova-${VERSION_NAME}.apk"
-          sha256sum "release-upload/Khetrova-${VERSION_NAME}.apk" | tee release-upload/SHA256SUMS.txt
+          cp "$apk" "release-upload/$apk_name"
+          sha256sum "release-upload/$apk_name" | tee release-upload/SHA256SUMS.txt
+          echo "Signing: $signing_note" >> "$GITHUB_STEP_SUMMARY"
           echo "Built APK size:"
-          du -h "release-upload/Khetrova-${VERSION_NAME}.apk"
+          du -h "release-upload/$apk_name"
 
       - name: Publish APK directly to GitHub Releases
+
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_meta.outputs.tag }}
@@ -119,7 +139,11 @@ jobs:
           target_commitish: main
           prerelease: ${{ inputs.prerelease }}
           generate_release_notes: true
+          body: |
+            APK signing: ${{ steps.apk_build.outputs.signing_note }}
+
+            Check the signing note before installing or distributing this APK.
           fail_on_unmatched_files: true
           files: |
-            release-upload/Khetrova-${{ steps.release_meta.outputs.APK_VERSION }}.apk
+            release-upload/${{ steps.apk_build.outputs.apk_file_name }}
             release-upload/SHA256SUMS.txt
