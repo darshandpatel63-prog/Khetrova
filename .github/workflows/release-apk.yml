@@ -59,26 +59,6 @@ jobs:
           echo "APK_VERSION=$tag" >> "$GITHUB_OUTPUT"
           echo "Preparing Khetrova release: $tag"
 
-      - name: Check signing secrets
-        shell: bash
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          missing=()
-          [ -n "$KEYSTORE_BASE64" ] || missing+=("KEYSTORE_BASE64")
-          [ -n "$STORE_PASSWORD" ] || missing+=("STORE_PASSWORD")
-          [ -n "$KEY_ALIAS" ] || missing+=("KEY_ALIAS")
-          [ -n "$KEY_PASSWORD" ] || missing+=("KEY_PASSWORD")
-          if [ "${#missing[@]}" -gt 0 ]; then
-            printf 'Missing GitHub Actions secret(s): %s\n' "${missing[*]}"
-            echo "Create these secrets in Settings > Secrets and variables > Actions before running this workflow."
-            exit 1
-          fi
-
       - name: Build release APK (no cache or artifacts)
         id: apk_build
         shell: bash
