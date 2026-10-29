@@ -841,6 +841,25 @@ class MainViewModel(
         }
     }
 
+    fun setMapPolygonPointsFromCoordinates(coordinates: List<Pair<Double, Double>>) {
+        if (coordinates.size < 3) {
+            _statusBannerMessage.value = "Enter at least 3 valid latitude, longitude pairs."
+            return
+        }
+        if (coordinates.any { (lat, lng) -> !lat.isFinite() || !lng.isFinite() || lat !in -90.0..90.0 || lng !in -180.0..180.0 }) {
+            _statusBannerMessage.value = "One or more coordinates are outside valid latitude/longitude ranges."
+            return
+        }
+        _mapPolygonPoints.value = coordinates.mapIndexed { index, pair ->
+            GpsLatLng(pair.first, pair.second, "P${index + 1}")
+        }
+        val avgLat = coordinates.map { it.first }.average()
+        val avgLng = coordinates.map { it.second }.average()
+        _mapDisplayCenter.value = GpsLatLng(avgLat, avgLng, "Boundary center")
+        _mapPolygonSurveyResult.value = computeCurrentMapSurvey()
+        _statusBannerMessage.value = "Loaded ${coordinates.size} boundary points from coordinates."
+    }
+
     fun addMapPolygonPoint(lat: Double, lng: Double) {
         val current = _mapPolygonPoints.value
         if (current.isEmpty() && _mapDisplayCenter.value == null) {
