@@ -30,37 +30,24 @@ Khetrova is an Android toolkit for land measurement and unit conversion, irregul
 - The manual uses Google ML Kit on-device translation for its supported languages. The app's language list contains more languages than ML Kit supports; unsupported target languages fall back to English. The first translation for a supported language downloads a language model, which may use mobile data. Machine translation can be imperfect.
 - The How to Use manual uses Google Mobile Ads native-ad slots after its guide sections, but the slots currently use Google's official **test** native-ad unit ID and the manifest's test App ID. Test ads do not earn revenue. Before publishing, replace both with Khetrova's own approved production App ID and native-ad unit ID, and complete the required consent/privacy setup. Other screens still use the older labelled test/demo ad-card UI.
 
-## Build and publish a signed APK from GitHub Actions
+## Build and publish a release APK from GitHub Actions
 
-Run **Actions → Build Khetrova Release APK → Run workflow**. This workflow is manual-only, builds the release APK without Gradle build cache, and uploads the APK plus a SHA-256 checksum directly to a GitHub Release. It does not upload Actions artifacts.
+Run **Actions → Build Khetrova Release APK → Run workflow**. The workflow is manual-only, builds the Android `release` variant without Gradle build cache, and uploads the APK plus a SHA-256 checksum directly to a GitHub Release. It does not upload Actions artifacts or use an Actions artifact cache.
 
-Before the first run, create one permanent Android upload keystore on a trusted device and keep a secure offline backup. **Never commit the keystore or its passwords to the repository.** For example, in Termux after installing a JDK that includes `keytool`:
+**Without signing secrets:** the workflow still builds an installable, debug-signed test APK and labels the asset `debug-signed`. This is suitable for testing on your own phone, not for Play Store or public production distribution. A fresh GitHub runner may use a different debug key on a later run, so Android may require you to uninstall the previous copy before installing the next build; uninstalling can remove app data.
+
+**For a permanent signed release:** create one upload keystore on a trusted device and keep a secure offline backup. **Never commit the keystore or its passwords to the repository.** In Termux with a JDK that includes `keytool`:
 
 ```sh
 keytool -genkeypair -v -keystore khetrova-upload-key.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
 base64 -w 0 khetrova-upload-key.jks
 ```
 
-Copy the base64 output securely, then add these repository Actions secrets under **Settings → Secrets and variables → Actions**:
+Add these four repository Actions secrets under **Settings → Secrets and variables → Actions**: `KEYSTORE_BASE64` (complete base64 output), `STORE_PASSWORD` (keystore password), `KEY_ALIAS` (the alias, e.g. `upload`), and `KEY_PASSWORD` (key password). Supply all four for the workflow to use the permanent keystore. Use that same keystore for every future release; Android generally will not allow an APK signed with a different key to update an existing installation. Never post the base64 value or passwords in chat, issues, commits, or screenshots.
 
-- `KEYSTORE_BASE64` — the complete base64 output
-- `STORE_PASSWORD` — the keystore password
-- `KEY_ALIAS` — the alias used when creating the key (example: `upload`)
-- `KEY_PASSWORD` — the key password
+The workflow uses the GitHub Actions run number as Android `versionCode` and the selected release tag as `versionName`. Leave the tag field blank to auto-generate `v1.0.RUN_NUMBER`, or enter a new unique tag.
 
-Use the same keystore for every future release. If you lose it or replace it, Android generally will not allow the new APK to update an installation signed with the old key. Do not post the base64 value or passwords in chat, issues, commits, or screenshots.
-
-On each manual run, the workflow uses the GitHub Actions run number as Android `versionCode`, and the selected release tag as `versionName`. Leave the release-tag field blank to auto-generate `v1.0.RUN_NUMBER`, or enter a new unique tag. The workflow intentionally fails before building if signing secrets are missing.
-
-## Release signing
-
-The release build uses environment variables so signing credentials do not need to be stored in the repository:
-
-- `KEYSTORE_PATH`: path to the upload keystore (defaults to `my-upload-key.jks` in the project root)
-- `STORE_PASSWORD`: keystore password
-- `KEY_PASSWORD`: key password
-
-The configured key alias is `upload`. Keep keystore files and passwords private; never commit them.
+In the Gradle build, `KEYSTORE_PATH` selects the keystore file (defaults to `my-upload-key.jks` in the project root), while `STORE_PASSWORD`, `KEY_ALIAS`, and `KEY_PASSWORD` provide its signing details. Keep all signing credentials private.
 
 ## App identity
 
