@@ -30,6 +30,28 @@ Khetrova is an Android toolkit for land measurement and unit conversion, irregul
 - The manual uses Google ML Kit on-device translation for its supported languages. The app's language list contains more languages than ML Kit supports; unsupported target languages fall back to English. The first translation for a supported language downloads a language model, which may use mobile data. Machine translation can be imperfect.
 - The How to Use manual uses Google Mobile Ads native-ad slots after its guide sections, but the slots currently use Google's official **test** native-ad unit ID and the manifest's test App ID. Test ads do not earn revenue. Before publishing, replace both with Khetrova's own approved production App ID and native-ad unit ID, and complete the required consent/privacy setup. Other screens still use the older labelled test/demo ad-card UI.
 
+## Build and publish a signed APK from GitHub Actions
+
+Run **Actions → Build Khetrova Release APK → Run workflow**. This workflow is manual-only, builds the release APK without Gradle build cache, and uploads the APK plus a SHA-256 checksum directly to a GitHub Release. It does not upload Actions artifacts.
+
+Before the first run, create one permanent Android upload keystore on a trusted device and keep a secure offline backup. **Never commit the keystore or its passwords to the repository.** For example, in Termux after installing a JDK that includes `keytool`:
+
+```sh
+keytool -genkeypair -v -keystore khetrova-upload-key.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+base64 -w 0 khetrova-upload-key.jks
+```
+
+Copy the base64 output securely, then add these repository Actions secrets under **Settings → Secrets and variables → Actions**:
+
+- `KEYSTORE_BASE64` — the complete base64 output
+- `STORE_PASSWORD` — the keystore password
+- `KEY_ALIAS` — the alias used when creating the key (example: `upload`)
+- `KEY_PASSWORD` — the key password
+
+Use the same keystore for every future release. If you lose it or replace it, Android generally will not allow the new APK to update an installation signed with the old key. Do not post the base64 value or passwords in chat, issues, commits, or screenshots.
+
+On each manual run, the workflow uses the GitHub Actions run number as Android `versionCode`, and the selected release tag as `versionName`. Leave the release-tag field blank to auto-generate `v1.0.RUN_NUMBER`, or enter a new unique tag. The workflow intentionally fails before building if signing secrets are missing.
+
 ## Release signing
 
 The release build uses environment variables so signing credentials do not need to be stored in the repository:
