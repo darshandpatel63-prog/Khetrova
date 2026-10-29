@@ -18,14 +18,26 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  // Release signing can be supplied through GitHub Actions secrets or local environment variables.
+  // Use a permanent upload keystore when complete signing details are present.
+  // Otherwise sign the release-variant APK with the runner's debug key for testing.
+  val configuredKeystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
+  val configuredStorePassword = System.getenv("STORE_PASSWORD")
+  val configuredKeyAlias = System.getenv("KEY_ALIAS") ?: "upload"
+  val configuredKeyPassword = System.getenv("KEY_PASSWORD")
+  val usePermanentReleaseSigning =
+    !configuredStorePassword.isNullOrBlank() &&
+      !configuredKeyPassword.isNullOrBlank() &&
+      !configuredKeyAlias.isNullOrBlank() &&
+      java.io.File(configuredKeystorePath).isFile
+
   signingConfigs {
-    create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-      storeFile = file(keystorePath)
-      storePassword = System.getenv("STORE_PASSWORD")
-      keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
-      keyPassword = System.getenv("KEY_PASSWORD")
+    if (usePermanentReleaseSigning) {
+      create("release") {
+        storeFile = file(configuredKeystorePath)
+        storePassword = configuredStorePassword
+        keyAlias = configuredKeyAlias
+        keyPassword = configuredKeyPassword
+      }
     }
   }
 
@@ -34,7 +46,7 @@ android {
       isCrunchPngs = false
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("release")
+      signingConfig = if (usePermanentReleaseSigning) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
     }
   }
   compileOptions {
